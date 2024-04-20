@@ -4,7 +4,6 @@ namespace Ominity\Laravel\Tests;
 
 use Ominity\Api\OminityApiClient;
 use Ominity\Laravel\OminityLaravelHttpClientAdapter;
-use Ominity\Laravel\Tests\TestCase;
 use ReflectionClass;
 
 class OminityApiClientTest extends TestCase

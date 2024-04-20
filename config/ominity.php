@@ -32,9 +32,9 @@
  */
 return [
 
-    'key' =>        env('OMINITY_KEY', 'test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),
-    'endpoint' =>   env('OMINITY_ENDPOINT', 'https://api.ominity.com'),
+    'key' => env('OMINITY_KEY', 'test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),
+    'endpoint' => env('OMINITY_ENDPOINT', 'https://api.ominity.com'),
 
-    'components' => []
+    'components' => [],
 
 ];

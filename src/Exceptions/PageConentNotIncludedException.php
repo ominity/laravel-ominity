@@ -19,19 +19,19 @@ class PageContentNotLoadedException extends \Exception
     protected $raisedAt;
 
     /**
-     * @param string $message
-     * @param \Throwable|null $previous
+     * @param  string  $message
+     * @param  \Throwable|null  $previous
      */
     public function __construct(
-        $message = "", 
+        $message = '',
         $code = 0,
         $previous = null
     ) {
         $this->plainMessage = $message;
-        $this->raisedAt = new  \DateTimeImmutable();
+        $this->raisedAt = new \DateTimeImmutable();
         $formattedRaisedAt = $this->raisedAt->format(DateTime::ISO8601);
 
-        $enhancedMessage = "[{$formattedRaisedAt}] " . $message;
+        $enhancedMessage = "[{$formattedRaisedAt}] ".$message;
 
         parent::__construct($enhancedMessage, $code, $previous);
     }
