@@ -15,4 +15,9 @@ class OminityManager
     {
         return $this->app->make(OminityApiClient::class);
     }
+
+    public function renderer(): OminityPageRenderer
+    {
+        return $this->app->make(OminityPageRenderer::class);
+    }
 }

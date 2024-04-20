@@ -49,6 +49,10 @@ class OminityServiceProvider extends ServiceProvider
             }
         );
 
+        $this->app->singleton(OminityPageRenderer::class, function ($app) {
+            return new OminityPageRenderer($app->make(OminityApiClient::class));
+        });
+
         $this->app->singleton(OminityManager::class);
     }
 }
