@@ -10,6 +10,7 @@ use Ominity\Laravel\OminityManager;
  * (Facade) Class Ominity.
  *
  * @method static OminityApiClient api()
+ * @method static OminityPageRenderer renderer()
  */
 class Ominity extends Facade
 {
