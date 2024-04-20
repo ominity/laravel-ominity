@@ -5,6 +5,7 @@ namespace Ominity\Laravel\Facades;
 use Illuminate\Support\Facades\Facade;
 use Ominity\Api\OminityApiClient;
 use Ominity\Laravel\OminityManager;
+use Ominity\Laravel\OminityPageRenderer;
 
 /**
  * (Facade) Class Ominity.
