@@ -4,7 +4,7 @@ namespace Ominity\Laravel;
 
 use Ominity\Api\OminityApiClient;
 use Ominity\Api\Resources\Cms\Page;
-use Ominity\Laravel\Exceptions\PageContentNotLoadedException;
+use Ominity\Laravel\Exceptions\PageConentNotIncludedException;
 use Ominity\Laravel\Views\Components\OminityComponent;
 
 class OminityPageRenderer
@@ -40,12 +40,12 @@ class OminityPageRenderer
      * @param  int  $pageId
      * @return string
      *
-     * @throws PageContentNotLoadedException
+     * @throws PageConentNotIncludedException
      */
     public function renderPage(Page $page)
     {
         if (empty($page->content)) {
-            throw new PageContentNotLoadedException("Content for page ID {$page->id} is not included. Make sure to pass a Page object that includes page content.");
+            throw new PageConentNotIncludedException("Content for page ID {$page->id} is not included. Make sure to pass a Page object that includes page content.");
         }
 
         OminityComponent::setPage($page);

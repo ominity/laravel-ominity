@@ -4,7 +4,7 @@ namespace Ominity\Laravel\Exceptions;
 
 use DateTime;
 
-class PageContentNotLoadedException extends \Exception
+class PageConentNotIncludedException extends \Exception
 {
     /**
      * @var string
