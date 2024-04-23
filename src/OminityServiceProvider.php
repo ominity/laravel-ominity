@@ -5,7 +5,7 @@ namespace Ominity\Laravel;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Ominity\Api\OminityApiClient;
-use Termwind\Html\PreRenderer;
+use Ominity\Laravel\Console\Commands\PreRenderPagesCommand;
 
 class OminityServiceProvider extends ServiceProvider
 {
@@ -22,7 +22,7 @@ class OminityServiceProvider extends ServiceProvider
             $this->publishes([__DIR__.'/../config/ominity.php' => config_path('ominity.php')]);
 
             $this->commands([
-                PreRenderer::class,
+                PreRenderPagesCommand::class,
             ]);
         }        
     }
