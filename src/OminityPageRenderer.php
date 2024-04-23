@@ -32,9 +32,9 @@ class OminityPageRenderer
 
         $cacheKey = md5("ominity_page_{$pageId}_{$language}");
         $cacheConfig = config('ominity.pages.cache');
-        if ($cacheConfig['enabled'] && ! $forced) {
+        if ($cacheConfig['enabled']) {
             $cacheStore = Cache::store($cacheConfig['store'] ?? 'file');
-            if ($cacheStore->has($cacheKey)) {
+            if ($cacheStore->has($cacheKey) && ! $forced) {
                 return $cacheStore->get($cacheKey);
             }
         }
@@ -67,9 +67,9 @@ class OminityPageRenderer
     {
         $cacheKey = md5("ominity_page_{$page->id}_{$language}");
         $cacheConfig = config('ominity.pages.cache');
-        if ($cacheConfig['enabled'] && ! $forced) {
+        if ($cacheConfig['enabled']) {
             $cacheStore = Cache::store($cacheConfig['store'] ?? 'file');
-            if ($cacheStore->has($cacheKey)) {
+            if ($cacheStore->has($cacheKey) && ! $forced) {
                 return $cacheStore->get($cacheKey);
             }
         }
