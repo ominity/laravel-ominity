@@ -24,7 +24,7 @@ class OminityServiceProvider extends ServiceProvider
             $this->commands([
                 PreRenderPagesCommand::class,
             ]);
-        }        
+        }
     }
 
     /**
