@@ -18,6 +18,8 @@ class OminityServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'ominity');
+
         if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__.'/../config/ominity.php' => config_path('ominity.php')]);
 

@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Ominity\Api\Exceptions\ApiException;
 use Ominity\Laravel\Facades\Ominity;
 
+use function Termwind\{render};
+
 class PreRenderPagesCommand extends Command
 {
     protected $signature = 'ominity:pages:pre-render {pageId?} {locale?}';
@@ -14,110 +16,121 @@ class PreRenderPagesCommand extends Command
 
     public function handle()
     {
+        if (! config('ominity.pages.cache')['enabled']) {
+            $this->renderError('Caching is disabled. Enable it in the ominity.php config file or set OMINITY_PAGES_CACHE_PRERENDER=true in your .env file.');
+
+            return self::FAILURE;
+        }
+
+        render(<<<'HTML'
+            <div class="mx-2 my-1">
+                <div class="space-x-1">
+                    <span class="px-1 bg-blue-500 text-white">Ominity Page Pre-Renderer</span>
+                </div>
+            </div>
+        HTML);
+
         $pageId = $this->argument('pageId');
         $locale = $this->argument('locale') ?: null;
 
-        if (! config('ominity.pages.cache')['enabled']) {
-            $this->error('Caching is disabled. It can be enabled in the ominity.php config file or by setting OMINITY_PAGES_CACHE_PRERENDER=true in your .env file.');
-
-            return;
-        }
-
         $ominity = Ominity::api();
-        $enabledLanguages = $ominity->settings->languages->all([
-            'filter' => [
-                'enabled' => true,
-            ],
-        ]);
+        $enabledLanguages = $ominity->settings->languages->all(['filter' => ['enabled' => true]]);
 
-        if ($locale !== null && ! $enabledLanguages->get($locale)) {
-            $this->error("Locale $locale is not a supported language by the API.");
+        if ($locale !== null && ! isset($enabledLanguages[$locale])) {
+            $this->renderError("Locale $locale is not a supported language by the API.");
 
-            return;
+            return self::FAILURE;
         }
 
-        $count = [
-            'success' => 0,
-            'failed' => 0,
-        ];
+        $count = ['success' => 0, 'failed' => 0];
 
         if ($pageId) {
-            if ($locale !== null) {
-                if ($this->preRenderPage($pageId, $locale)) {
-                    $count['success']++;
-                } else {
-                    $count['failed']++;
-                }
-            } else {
-                foreach ($enabledLanguages as $language) {
-                    if ($this->preRenderPage($pageId, $language->code)) {
-                        $count['success']++;
-                    } else {
-                        $count['failed']++;
-                    }
-                }
-            }
+            $this->preRenderSinglePage($pageId, $locale, $enabledLanguages, $count);
         } else {
-            $this->info('No specific page ID provided, pre-rendering all pages');
-
-            $pages = $ominity->cms->pages->page(1, 10, [
-                'filter' => [
-                    'cache' => true,
-                    'published' => true,
-                ],
-            ]);
-
-            while ($pages) {
-                foreach ($pages as $page) {
-
-                    if ($locale !== null) {
-                        if ($this->preRenderPage($page->id, $locale)) {
-                            $count['success']++;
-                        } else {
-                            $count['failed']++;
-                        }
-                    } else {
-                        foreach ($enabledLanguages as $language) {
-                            if ($this->preRenderPage($page->id, $language->code)) {
-                                $count['success']++;
-                            } else {
-                                $count['failed']++;
-                            }
-                        }
-                    }
-                }
-                $pages = $pages->next();
-            }
+            $this->preRenderAllPages($enabledLanguages, $locale, $count);
         }
 
-        $this->info("Total successful caches: {$count['success']}, Total failed caches: {$count['failed']}");
+        render(<<<'HTML'
+            <div class="mx-2 mt-1">
+                <span class="font-bold text-green">Totals</span>
+            </div>
+        HTML);
+        $this->outputLine('Success', $count['success'], 'green');
+        $this->outputLine('Failed', $count['failed'], 'red');
+
+        return self::SUCCESS;
     }
 
-    protected function preRenderPage($pageId, $locale)
+    private function preRenderSinglePage($pageId, $locale, $enabledLanguages, &$count)
+    {
+        if ($locale) {
+            $this->attemptPreRender($pageId, $locale, $count);
+        } else {
+            foreach ($enabledLanguages as $language) {
+                $this->attemptPreRender($pageId, $language->code, $count);
+            }
+        }
+    }
+
+    private function preRenderAllPages($enabledLanguages, $locale, &$count)
+    {
+        $pages = Ominity::api()->cms->pages->all(['filter' => ['cache' => true, 'published' => true]]);
+
+        foreach ($pages as $page) {
+            if ($locale) {
+                $this->attemptPreRender($page->id, $locale, $count);
+            } else {
+                foreach ($enabledLanguages as $language) {
+                    $this->attemptPreRender($page->id, $language->code, $count);
+                }
+            }
+        }
+    }
+
+    private function attemptPreRender($pageId, $locale, &$count)
     {
         app()->setLocale($locale);
-
-        $ominity = Ominity::api();
-        $ominity->setLanguage($locale);
+        Ominity::api()->setLanguage($locale);
 
         try {
-            $page = $ominity->cms->pages->get($pageId, ['include' => 'content']);
+            $page = Ominity::api()->cms->pages->get($pageId, ['include' => 'content']);
+            if (! $page->isCached) {
+                $this->outputLine($page->name, 'FAILED', 'red', $locale);
+                $count['failed']++;
+
+                return;
+            }
+
+            $startTime = microtime(true);
+
+            Ominity::renderer()->renderPage($page, $locale, true);
+
+            $endTime = microtime(true);
+            $renderTime = $endTime - $startTime;
+            $formattedTime = sprintf('%.1f s', $renderTime);
+
+            $this->outputLine($page->name, $formattedTime, 'gray', $locale);
+            $count['success']++;
         } catch (ApiException $e) {
-            $this->error("Failed to fetch page $pageId: ".$e->getMessage());
-
-            return false;
+            $this->outputLine($page->name, 'FAILED', 'red', $locale);
+            $count['failed']++;
         }
+    }
 
-        if (! $page->isCached) {
-            $dashboardUrl = $page->_links->dashboard ?? 'URL not available';
-            $this->error("Caching is not enabled for page ID $pageId. Enable it here: $dashboardUrl");
+    private function outputLine($title, $value, $valueColor = 'gray', $subText = null)
+    {
+        render(view('ominity:cli.line', [
+            'title' => $title,
+            'subText' => $subText,
+            'value' => $value,
+            'valueColor' => $valueColor,
+        ])->render());
+    }
 
-            return false;
-        }
-
-        $output = Ominity::renderer()->renderPage($page, $locale, true);
-        $this->info("Pre-rendered and cached page: $pageId for locale: $locale - Output length: ".strlen($output));
-
-        return true;
+    private function renderError($message)
+    {
+        render(<<<'HTML'
+            <div class='bg-red-500 text-white p-1'>$message</div>
+        HTML);
     }
 }
