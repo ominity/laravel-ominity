@@ -34,7 +34,16 @@ return [
 
     'key' => env('OMINITY_KEY', 'test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),
     'endpoint' => env('OMINITY_ENDPOINT', 'https://api.ominity.com'),
+    'localization' => env('OMINITY_LOCALIZATION', true),
 
-    'components' => [],
+    'pages' => [
+        'cache' => [
+            'enabled' => env('OMINITY_PAGES_CACHE_ENABLED', true),
+            'expiration' => env('OMINITY_PAGES_CACHE_EXPIRATION', 3600), // Cache expiration time in seconds
+            'store' => env('OMINITY_PAGES_CACHE_STORE', 'file'), // Cache store location
+            'pre_render' => env('OMINITY_PAGES_CACHE_PRERENDER', true), // Enable pre-rendering of pages
+        ],
 
+        'components' => [],
+    ],
 ];

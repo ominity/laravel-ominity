@@ -45,6 +45,10 @@ class OminityServiceProvider extends ServiceProvider
                     $client->setApiEndpoint($apiEndpoint);
                 }
 
+                if ($app['config']['ominity.localization']) {
+                    $client->setLanguage(app()->getLocale());
+                }
+
                 return $client;
             }
         );
