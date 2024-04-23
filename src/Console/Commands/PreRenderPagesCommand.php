@@ -119,7 +119,7 @@ class PreRenderPagesCommand extends Command
 
     private function outputLine($title, $value, $valueColor = 'gray', $subText = null)
     {
-        render(view('ominity:cli.line', [
+        render(view('ominity::cli.line', [
             'title' => $title,
             'subText' => $subText,
             'value' => $value,

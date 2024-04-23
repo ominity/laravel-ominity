@@ -5,7 +5,7 @@
     'valueColor' => 'gray'
 ])
  
-<div class="flex space-x-1">
+<div class="flex mx-2 space-x-1">
     <span class="font-bold">{{ $title }}</span>
     @if($subText)
     <i class="text-gray">{{ $subText }}</i>
