@@ -48,7 +48,7 @@ class PreRenderPagesCommand extends Command
                 }
             } else {
                 foreach ($enabledLanguages as $language) {
-                    if ($this->preRenderPage($pageId, $language)) {
+                    if ($this->preRenderPage($pageId, $language->code)) {
                         $count['success']++;
                     } else {
                         $count['failed']++;
@@ -76,7 +76,7 @@ class PreRenderPagesCommand extends Command
                         }
                     } else {
                         foreach ($enabledLanguages as $language) {
-                            if ($this->preRenderPage($page->id, $language)) {
+                            if ($this->preRenderPage($page->id, $language->code)) {
                                 $count['success']++;
                             } else {
                                 $count['failed']++;
