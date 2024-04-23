@@ -25,7 +25,9 @@ class PreRenderPagesCommand extends Command
 
         $ominity = Ominity::api();
         $enabledLanguages = $ominity->settings->languages->all([
-            'enabled' => true,
+            'filter' => [
+                'enabled' => true,
+            ],
         ]);
 
         if ($locale !== null && ! $enabledLanguages->get($locale)) {
