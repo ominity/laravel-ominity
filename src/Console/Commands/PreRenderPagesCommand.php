@@ -93,6 +93,8 @@ class PreRenderPagesCommand extends Command
         Ominity::api()->setLanguage($locale);
 
         try {
+            $startTime = microtime(true);
+
             $page = Ominity::api()->cms->pages->get($pageId, ['include' => 'content']);
             if (! $page->isCached) {
                 $this->outputLine($page->name, 'FAILED', 'red', $locale);
@@ -100,8 +102,6 @@ class PreRenderPagesCommand extends Command
 
                 return;
             }
-
-            $startTime = microtime(true);
 
             Ominity::renderer()->renderPage($page, $locale, true);
 
