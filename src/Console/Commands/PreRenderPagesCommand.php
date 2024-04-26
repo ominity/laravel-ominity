@@ -17,7 +17,7 @@ class PreRenderPagesCommand extends Command
     public function handle()
     {
         if (! config('ominity.pages.cache')['enabled']) {
-            $this->renderError('Caching is disabled. Enable it in the ominity.php config file or set OMINITY_PAGES_CACHE_PRERENDER=true in your .env file.');
+            $this->renderError('Page caching is disabled. Enable it in the ominity.php config file or set OMINITY_PAGES_CACHE_ENABLED=true in your .env file.');
 
             return self::FAILURE;
         }

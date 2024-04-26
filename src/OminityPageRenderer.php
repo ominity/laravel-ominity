@@ -26,7 +26,7 @@ class OminityPageRenderer
      */
     public function renderPagebyId(int $pageId, $language = null, $forced = false)
     {
-        if ($language == null) {
+        if ($language === null) {
             $language = app()->getLocale();
         }
 
@@ -39,6 +39,7 @@ class OminityPageRenderer
             }
         }
 
+        $this->ominity->setLanguage($language);
         $page = $this->ominity->cms->pages->get($pageId, ['include' => 'content']);
         OminityComponent::setPage($page);
 
@@ -65,6 +66,10 @@ class OminityPageRenderer
      */
     public function renderPage(Page $page, $language = null, $forced = false)
     {
+        if ($language === null) {
+            $language = app()->getLocale();
+        }
+
         $cacheKey = md5("ominity_page_{$page->id}_{$language}");
         $cacheConfig = config('ominity.pages.cache');
         if ($cacheConfig['enabled']) {
