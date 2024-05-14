@@ -27,6 +27,8 @@ class OminityServiceProvider extends ServiceProvider
                 PreRenderPagesCommand::class,
             ]);
         }
+
+        $this->extendSocialite();
     }
 
     /**
@@ -65,5 +67,23 @@ class OminityServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(OminityManager::class);
+    }
+
+    /**
+     * Extend the Laravel Socialite factory class, if available.
+     *
+     * @return void
+     */
+    protected function extendSocialite()
+    {
+        if (interface_exists($socialiteFactoryClass = \Laravel\Socialite\Contracts\Factory::class)) {
+            $socialite = $this->app->make($socialiteFactoryClass);
+
+            $socialite->extend('ominity', function (Container $app) use ($socialite) {
+                $config = $app['config']['services.ominity'];
+
+                return $socialite->buildProvider(OminityOAuthProvider::class, $config);
+            });
+        }
     }
 }

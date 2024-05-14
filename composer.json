@@ -24,7 +24,11 @@
       "mockery/mockery": "^1.4",
       "orchestra/testbench": "^8.0|^9.0",
       "phpunit/phpunit": "^10.0",
+      "laravel/socialite": "^5.5",
       "laravel/pint": "^1.1"
+    },
+    "suggest": {
+      "laravel/socialite": "Use Ominity OAuth to authenticate via Laravel Socialite with the Ominity API. This is needed for some endpoints."
     },
     "autoload": {
       "psr-4": {

@@ -33,7 +33,7 @@
 return [
 
     'key' => env('OMINITY_KEY', 'test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'),
-    'endpoint' => env('OMINITY_ENDPOINT', 'https://api.ominity.com'),
+    'endpoint' => env('OMINITY_API_ENDPOINT', 'https://api.ominity.com'),
     'localization' => env('OMINITY_LOCALIZATION', true),
 
     'pages' => [
@@ -46,4 +46,11 @@ return [
 
         'components' => [],
     ],
+
+    // If you intend on using Ominity OAauth, place the following in the 'config/services.php'
+    // 'ominity' => [
+    //     'client_id'     => env('OMINITY_CLIENT_ID'),
+    //     'client_secret' => env('OMINITY_CLIENT_SECRET'),
+    //     'redirect'      => env('OMINITY_REDIRECT_URI'),
+    // ],
 ];
