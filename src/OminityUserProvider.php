@@ -114,14 +114,16 @@ class OminityUserProvider implements UserProvider
     {
         $endpoint = $this->ominityApiClient->getApiEndpoint() . '/oauth2/token';
 
-        $response = $this->ominityApiClient->performHttpCallToFullUrl(OminityApiClient::HTTP_POST, $endpoint, [
-                'grant_type' => 'password',
-                'client_id' => $this->clientId,
-                'client_secret' => $this->clientSecret,
-                'username' => $username,
-                'password' => $password,
-                'scope' => $scope,
-            ]);
+        $body = [
+            'grant_type' => 'password',
+            'client_id' => $this->clientId,
+            'client_secret' => $this->clientSecret,
+            'username' => $username,
+            'password' => $password,
+            'scope' => $scope,
+        ];
+        
+        $response = $this->ominityApiClient->performHttpCallToFullUrl(OminityApiClient::HTTP_POST, $endpoint, @json_encode($body));
 
         return $response;
     }
