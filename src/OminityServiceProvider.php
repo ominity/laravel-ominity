@@ -3,6 +3,7 @@
 namespace Ominity\Laravel;
 
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Ominity\Api\OminityApiClient;
 use Ominity\Laravel\Console\Commands\PreRenderPagesCommand;
@@ -27,6 +28,14 @@ class OminityServiceProvider extends ServiceProvider
                 PreRenderPagesCommand::class,
             ]);
         }
+
+        Auth::provider('ominity', function ($app, array $config) {
+            return new OminityUserProvider(
+                $app->make(OminityApiClient::class),
+                $config['client_id'],
+                $config['client_secret']
+            );
+        });
 
         $this->extendSocialite();
     }
