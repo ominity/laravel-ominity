@@ -2,6 +2,7 @@
 
 namespace Ominity\Laravel;
 
+use Closure;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -118,32 +119,32 @@ class OminityServiceProvider extends ServiceProvider
             return new VatNumber($app->make(VatValidationService::class));
         });
 
-        Validator::extend('vat_number', function ($attribute, $value, $parameters, $validator) {
-            return app(VatNumber::class)->passes($attribute, $value);
+        Validator::extend('vat_number', function (string $attribute, mixed $value, Closure $fail) {
+            return app(VatNumber::class)->validate($attribute, $value, $fail);
         });
 
         $this->app->resolving(VatNumberFormat::class, function ($rule, $app) {
             return new VatNumberFormat($app->make(VatValidationService::class));
         });
 
-        Validator::extend('vat_number_format', function ($attribute, $value, $parameters, $validator) {
-            return app(VatNumberFormat::class)->passes($attribute, $value);
+        Validator::extend('vat_number_format', function (string $attribute, mixed $value, Closure $fail) {
+            return app(VatNumberFormat::class)->validate($attribute, $value, $fail);
         });
 
         $this->app->resolving(PaymentMethodEnabled::class, function ($rule, $app) {
             return new PaymentMethodEnabled($app->make(OminityApiClient::class));
         });
 
-        Validator::extend('paymentmethod_enabled', function ($attribute, $value, $parameters, $validator) {
-            return app(PaymentMethodEnabled::class)->passes($attribute, $value);
+        Validator::extend('paymentmethod_enabled', function (string $attribute, mixed $value, Closure $fail) {
+            return app(PaymentMethodEnabled::class)->validate($attribute, $value, $fail);
         });
 
         $this->app->resolving(PaymentMethodMandateSupport::class, function ($rule, $app) {
             return new PaymentMethodMandateSupport($app->make(OminityApiClient::class));
         });
 
-        Validator::extend('paymentmethod_mandate_support', function ($attribute, $value, $parameters, $validator) {
-            return app(PaymentMethodMandateSupport::class)->passes($attribute, $value);
+        Validator::extend('paymentmethod_mandate_support', function (string $attribute, mixed $value, Closure $fail) {
+            return app(PaymentMethodMandateSupport::class)->validate($attribute, $value, $fail);
         });
     }
 }
