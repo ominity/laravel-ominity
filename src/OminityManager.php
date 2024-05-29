@@ -4,6 +4,7 @@ namespace Ominity\Laravel;
 
 use Illuminate\Contracts\Container\Container;
 use Ominity\Api\OminityApiClient;
+use Ominity\Laravel\Services\VatValidationService;
 
 class OminityManager
 {
@@ -19,5 +20,10 @@ class OminityManager
     public function renderer(): OminityPageRenderer
     {
         return $this->app->make(OminityPageRenderer::class);
+    }
+
+    public function vatValidator(): VatValidationService
+    {
+        return $this->app->make(VatValidationService::class);
     }
 }

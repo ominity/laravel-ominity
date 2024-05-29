@@ -4,9 +4,13 @@ namespace Ominity\Laravel;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Ominity\Api\OminityApiClient;
 use Ominity\Laravel\Console\Commands\PreRenderPagesCommand;
+use Ominity\Laravel\Rules\VatNumber;
+use Ominity\Laravel\Rules\VatNumberFormat;
+use Ominity\Laravel\Services\VatValidationService;
 
 class OminityServiceProvider extends ServiceProvider
 {
@@ -38,6 +42,7 @@ class OminityServiceProvider extends ServiceProvider
         });
 
         $this->extendSocialite();
+        $this->extendValidation();
     }
 
     /**
@@ -75,6 +80,10 @@ class OminityServiceProvider extends ServiceProvider
             return new OminityPageRenderer($app->make(OminityApiClient::class));
         });
 
+        $this->app->singleton(VatValidationService::class, function ($app) {
+            return new VatValidationService($app->make(OminityApiClient::class));
+        });
+
         $this->app->singleton(OminityManager::class);
     }
 
@@ -94,5 +103,29 @@ class OminityServiceProvider extends ServiceProvider
                 return $socialite->buildProvider(OminityOAuthProvider::class, $config);
             });
         }
+    }
+
+    /**
+     * Extend the Laravel Validation factory.
+     *
+     * @return void
+     */
+    protected function extendValidation()
+    {
+        $this->app->resolving(VatNumber::class, function ($rule, $app) {
+            return new VatNumber($app->make(VatValidationService::class));
+        });
+
+        Validator::extend('vat_number', function ($attribute, $value, $parameters, $validator) {
+            return app(VatNumber::class)->passes($attribute, $value);
+        });
+
+        $this->app->resolving(VatNumberFormat::class, function ($rule, $app) {
+            return new VatNumberFormat($app->make(VatValidationService::class));
+        });
+
+        Validator::extend('vat_number_format', function ($attribute, $value, $parameters, $validator) {
+            return app(VatNumberFormat::class)->passes($attribute, $value);
+        });
     }
 }

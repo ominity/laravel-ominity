@@ -6,12 +6,14 @@ use Illuminate\Support\Facades\Facade;
 use Ominity\Api\OminityApiClient;
 use Ominity\Laravel\OminityManager;
 use Ominity\Laravel\OminityPageRenderer;
+use Ominity\Laravel\Services\VatValidationService;
 
 /**
  * (Facade) Class Ominity.
  *
  * @method static OminityApiClient api()
  * @method static OminityPageRenderer renderer()
+ * @method static VatValidationService vatValidator()
  */
 class Ominity extends Facade
 {
