@@ -6,7 +6,6 @@ use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Support\Facades\Session;
 use Ominity\Api\Resources\Users\User as OminityUser;
-use Ominity\Laravel\Facades\Ominity;
 
 class User extends OminityUser implements AuthenticatableContract
 {
@@ -20,7 +19,7 @@ class User extends OminityUser implements AuthenticatableContract
     /**
      * Set the current customer in the session.
      *
-     * @param int $customerId
+     * @param  int  $customerId
      */
     public function setCurrentCustomer($customerId)
     {
@@ -36,13 +35,13 @@ class User extends OminityUser implements AuthenticatableContract
     {
         $customerId = Session::get('current_customer_id');
 
-        if($customerId) {
+        if ($customerId) {
             try {
                 return $this->client->users->customers->getFor($this, $customerId);
+            } catch (\Ominity\Api\Exceptions\ApiException $e) {
             }
-            catch(\Ominity\Api\Exceptions\ApiException $e) {}
         }
-        
+
         return null;
     }
 }

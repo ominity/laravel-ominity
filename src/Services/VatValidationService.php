@@ -10,7 +10,6 @@ class VatValidationService
     /**
      * Regular expression patterns per country code
      *
-     * @var array
      * @link http://ec.europa.eu/taxation_customs/vies/faq.html?locale=en#item_11
      */
     protected static array $pattern_expression = [
@@ -53,9 +52,6 @@ class VatValidationService
 
     /**
      * Return if a country is supported by this validator
-     * 
-     * @param string $country
-     * @return bool
      */
     public static function countryIsSupported(string $country): bool
     {
@@ -64,20 +60,17 @@ class VatValidationService
 
     /**
      * Validate a VAT number format.
-     * 
-     * @param string $vatNumber
-     * @return bool
      */
     public function validateFormat(string $vatNumber): bool
     {
         $vatNumber = $this->vatCleaner($vatNumber);
-        list($country, $number) = $this->splitVat($vatNumber);
+        [$country, $number] = $this->splitVat($vatNumber);
 
         if (! isset(self::$pattern_expression[$country])) {
             return false;
         }
 
-        $validate_rule = preg_match('/^' . self::$pattern_expression[$country] . '$/', $number) > 0;
+        $validate_rule = preg_match('/^'.self::$pattern_expression[$country].'$/', $number) > 0;
 
         if ($validate_rule === true && $country === 'IT') {
             $result = self::luhnCheck($number);
@@ -90,9 +83,6 @@ class VatValidationService
 
     /**
      * Check existence VAT number
-     * 
-     * @param string $vatNumber
-     * @return bool
      */
     public function validateExistence(string $vatNumber): bool
     {
@@ -104,8 +94,7 @@ class VatValidationService
             try {
                 $vatValidation = $this->ominityApiClient->commerce->vatvalidations->get($vatNumber);
                 $isValid = $vatValidation->isValid;
-            }
-            catch(ApiException $e) {
+            } catch (ApiException $e) {
                 $isValid = false;
             }
         }
@@ -115,9 +104,6 @@ class VatValidationService
 
     /**
      * Validates a VAT number
-     *
-     * @param string $vatNumber
-     * @return bool
      */
     public function validate(string $vatNumber): bool
     {
@@ -128,8 +114,6 @@ class VatValidationService
      * A php implementation of Luhn Algo
      *
      * @link https://en.wikipedia.org/wiki/Luhn_algorithm
-     * @param  string $vat
-     * @return int
      */
     public static function luhnCheck(string $vat): int
     {
@@ -149,10 +133,6 @@ class VatValidationService
         return $sum;
     }
 
-    /**
-     * @param string $vatNumber
-     * @return string
-     */
     private function vatCleaner(string $vatNumber): string
     {
         $vatNumber_no_spaces = trim($vatNumber);
@@ -160,10 +140,6 @@ class VatValidationService
         return strtoupper($vatNumber_no_spaces);
     }
 
-    /**
-     * @param string $vatNumber
-     * @return array
-     */
     private function splitVat(string $vatNumber): array
     {
         return [

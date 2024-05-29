@@ -82,16 +82,15 @@ class OminityOAuthProvider extends AbstractProvider implements ProviderInterface
      */
     protected function mapUserToObject(array $user)
     {
-        if($user['resource'] == 'user') {
+        if ($user['resource'] == 'user') {
             return (new User())->setRaw($user)->map([
                 'id' => $user['id'],
                 'nickname' => $user['firstName'],
-                'name' => $user['firstName'] . ' ' . $user['lastName'],
+                'name' => $user['firstName'].' '.$user['lastName'],
                 'email' => $user['email'],
                 'avatar' => $user['avatar'],
             ]);
-        }
-        else if($user['resource'] == 'admin') {
+        } elseif ($user['resource'] == 'admin') {
             return (new User())->setRaw($user)->map([
                 'id' => $user['id'],
                 'nickname' => $user['name'],
@@ -99,6 +98,6 @@ class OminityOAuthProvider extends AbstractProvider implements ProviderInterface
                 'email' => $user['email'],
                 'avatar' => null,
             ]);
-        }        
+        }
     }
 }

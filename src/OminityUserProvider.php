@@ -2,10 +2,10 @@
 
 namespace Ominity\Laravel;
 
-use Ominity\Laravel\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
 use Ominity\Api\OminityApiClient;
+use Ominity\Laravel\Models\User;
 
 class OminityUserProvider implements UserProvider
 {
@@ -31,9 +31,9 @@ class OminityUserProvider implements UserProvider
             foreach (get_object_vars($apiUser) as $property => $value) {
                 $user->$property = $value;
             }
+
             return $user;
-        }
-        catch (\Ominity\Api\Exceptions\ApiException $e) {
+        } catch (\Ominity\Api\Exceptions\ApiException $e) {
             return null;
         }
     }
@@ -71,14 +71,14 @@ class OminityUserProvider implements UserProvider
         try {
             $response = $this->authenticateUser($credentials['email'], $credentials['password']);
 
-            if (!isset($response->access_token)) {
+            if (! isset($response->access_token)) {
                 return null;
             }
 
             $apiUsers = $this->ominityApiClient->users->all([
                 'filter' => [
-                    'email' => $credentials['email']
-                ]
+                    'email' => $credentials['email'],
+                ],
             ]);
 
             if (empty($apiUsers)) {
@@ -95,24 +95,23 @@ class OminityUserProvider implements UserProvider
 
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
-        return !is_null($user);
+        return ! is_null($user);
     }
 
-    public function rehashPasswordIfRequired(Authenticatable $user, array $credentials, bool $force = false) {
+    public function rehashPasswordIfRequired(Authenticatable $user, array $credentials, bool $force = false)
+    {
         // TODO
     }
 
     /**
-     * @param  string $username
-     * @param  string $password
-     * @param  string $scope
-     * 
+     * @param  string  $scope
      * @return \stdClass
+     *
      * @throws \Ominity\Api\Exceptions\ApiException
      */
-    protected function authenticateUser(string $username, string $password, $scope = "*")
+    protected function authenticateUser(string $username, string $password, $scope = '*')
     {
-        $endpoint = $this->ominityApiClient->getApiEndpoint() . '/oauth2/token';
+        $endpoint = $this->ominityApiClient->getApiEndpoint().'/oauth2/token';
 
         $body = [
             'grant_type' => 'password',
@@ -122,7 +121,7 @@ class OminityUserProvider implements UserProvider
             'password' => $password,
             'scope' => $scope,
         ];
-        
+
         $response = $this->ominityApiClient->performHttpCallToFullUrl(OminityApiClient::HTTP_POST, $endpoint, @json_encode($body));
 
         return $response;
