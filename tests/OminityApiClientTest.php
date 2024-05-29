@@ -18,10 +18,10 @@ class OminityApiClientTest extends TestCase
 
     public function testApiKeyIsSetOnResolvingApiClient()
     {
-        config(['ominity.key' => 'test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxyz']);
+        config(['ominity.key' => 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxyz']);
 
         $this->assertEquals(
-            'test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxyz',
+            'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxyz',
             $this->getUnaccessiblePropertyValue('apiKey')
         );
     }

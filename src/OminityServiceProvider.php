@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Ominity\Api\OminityApiClient;
 use Ominity\Laravel\Console\Commands\PreRenderPagesCommand;
+use Ominity\Laravel\Rules\PaymentMethodEnabled;
+use Ominity\Laravel\Rules\PaymentMethodMandateSupport;
 use Ominity\Laravel\Rules\VatNumber;
 use Ominity\Laravel\Rules\VatNumberFormat;
 use Ominity\Laravel\Services\VatValidationService;
@@ -126,6 +128,22 @@ class OminityServiceProvider extends ServiceProvider
 
         Validator::extend('vat_number_format', function ($attribute, $value, $parameters, $validator) {
             return app(VatNumberFormat::class)->passes($attribute, $value);
+        });
+
+        $this->app->resolving(PaymentMethodEnabled::class, function ($rule, $app) {
+            return new PaymentMethodEnabled($app->make(OminityApiClient::class));
+        });
+
+        Validator::extend('paymentmethod_enabled', function ($attribute, $value, $parameters, $validator) {
+            return app(PaymentMethodEnabled::class)->passes($attribute, $value);
+        });
+
+        $this->app->resolving(PaymentMethodMandateSupport::class, function ($rule, $app) {
+            return new PaymentMethodMandateSupport($app->make(OminityApiClient::class));
+        });
+
+        Validator::extend('paymentmethod_mandate_support', function ($attribute, $value, $parameters, $validator) {
+            return app(PaymentMethodMandateSupport::class)->passes($attribute, $value);
         });
     }
 }
