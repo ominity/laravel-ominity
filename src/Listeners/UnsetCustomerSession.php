@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Listeners;
+namespace Ominity\Laravel\Listeners;
 
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Session;
