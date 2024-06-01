@@ -26,5 +26,6 @@ class UnsetCustomerSession
     public function handle(Logout $event)
     {
         Session::forget('ominity_customer_account');
+        Session::save();
     }
 }

@@ -26,6 +26,7 @@ class User extends OminityUser implements AuthenticatableContract
     public function setCurrentCustomer($customerId)
     {
         Session::put('ominity_customer_account', $customerId);
+        Session::save();
     }
 
     /**
