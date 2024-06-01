@@ -11,6 +11,8 @@ class User extends OminityUser implements AuthenticatableContract
 {
     use Authenticatable;
 
+    protected $currentCustomer;
+
     public function getKeyName()
     {
         return 'id';
@@ -23,7 +25,7 @@ class User extends OminityUser implements AuthenticatableContract
      */
     public function setCurrentCustomer($customerId)
     {
-        Session::put('current_customer_id', $customerId);
+        Session::put('ominity_customer_account', $customerId);
     }
 
     /**
@@ -33,15 +35,19 @@ class User extends OminityUser implements AuthenticatableContract
      */
     public function getCurrentCustomer()
     {
-        $customerId = Session::get('current_customer_id');
-
+        if ($this->currentCustomer) {
+            return $this->currentCustomer;
+        }
+ 
+        $customerId = Session::get('ominity_customer_account');
+ 
         if ($customerId) {
             try {
-                return $this->client->users->customers->getFor($this, $customerId);
-            } catch (\Ominity\Api\Exceptions\ApiException $e) {
-            }
+                $this->currentCustomer = $this->client->users->customers->getFor($this, $customerId);
+                return $this->currentCustomer;
+            } catch (\Ominity\Api\Exceptions\ApiException $e) {}
         }
-
+ 
         return null;
     }
 }

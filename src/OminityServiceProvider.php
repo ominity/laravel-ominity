@@ -88,6 +88,8 @@ class OminityServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(OminityManager::class);
+
+        $this->app->register(EventServiceProvider::class);
     }
 
     /**
