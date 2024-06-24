@@ -24,7 +24,7 @@ class OminityRouterService
      * @param  Route|\stdClass  $route
      * @return string
      */
-    public function route($route)
+    public function route($route, $locale = null, $keepQuery = false)
     {
         $route = app('router')->getRoutes()->getByName($route->name);
         $requiredParameters = $route->parameterNames();
@@ -32,6 +32,16 @@ class OminityRouterService
         $filteredParams = array_filter($route->parameters, function ($key) use ($requiredParameters) {
             return in_array($key, $requiredParameters);
         }, ARRAY_FILTER_USE_KEY);
+
+        if($locale) {
+            $filteredParams['locale'] = $locale;
+        }
+
+        // If keepQuery is true, merge the current query parameters
+        if ($keepQuery) {
+            $currentQueryParams = request()->query();
+            $filteredParams = array_merge($currentQueryParams, $filteredParams);
+        }
 
         return route($route->name, $filteredParams);
     }
