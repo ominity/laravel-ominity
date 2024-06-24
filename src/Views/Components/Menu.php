@@ -31,7 +31,7 @@ class Menu extends Component
      */
     public function render()
     {
-        $config = config('ominty.menus.cache');
+        $config = config('ominity.menus.cache');
         $cacheKey = 'menu-html-'.$this->identifier.'-'.app()->getLocale();
 
         if ($config['enabled']) {
