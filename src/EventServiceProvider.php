@@ -11,8 +11,8 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
 
         Logout::class => [
-            UnsetCustomerSession::class
-        ]
-        
+            UnsetCustomerSession::class,
+        ],
+
     ];
 }

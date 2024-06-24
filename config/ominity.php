@@ -47,6 +47,23 @@ return [
         'components' => [],
     ],
 
+    'menus' => [
+        'cache' => [
+            'enabled' => env('OMINITY_MENUS_CACHE_ENABLED', true),
+            'expiration' => env('OMINITY_MENUS_CACHE_EXPIRATION', 3600), // Cache expiration time in seconds
+            'store' => env('OMINITY_MENUS_CACHE_STORE', 'file'), // Cache store location
+            'pre_render' => env('OMINITY_MENUS_CACHE_PRERENDER', true), // Enable pre-rendering of menus
+        ],
+    ],
+
+    'routes' => [
+        'cache' => [
+            'enabled' => env('OMINITY_ROUTES_CACHE_ENABLED', true),
+            'expiration' => env('OMINITY_ROUTES_CACHE_EXPIRATION', 3600), // Cache expiration time in seconds
+            'store' => env('OMINITY_ROUTES_CACHE_STORE', 'file'), // Cache store location
+        ],
+    ],
+
     // If you intend on using Ominity User Provider, place the following in the 'config/auth.php'
     // 'guards' => [
     //      // Other guards...

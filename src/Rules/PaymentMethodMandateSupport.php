@@ -21,14 +21,14 @@ class PaymentMethodMandateSupport implements ValidationRule
      * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
-    {   
+    {
         $mandate = false;
 
         try {
             $paymehtmethod = $this->ominityApiClient->settings->paymentmethods->get($value);
             $mandate = $paymehtmethod->supportsMandates();
+        } catch (\Ominity\Api\Exceptions\ApiException $e) {
         }
-        catch(\Ominity\Api\Exceptions\ApiException $e) {}
 
         if (! $mandate) {
             $fail('The :attribute must be a a payment method that supports mandates.');

@@ -2,9 +2,10 @@
 
 namespace Ominity\Laravel;
 
-use Closure;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Ominity\Api\OminityApiClient;
@@ -13,6 +14,7 @@ use Ominity\Laravel\Rules\PaymentMethodEnabled;
 use Ominity\Laravel\Rules\PaymentMethodMandateSupport;
 use Ominity\Laravel\Rules\VatNumber;
 use Ominity\Laravel\Rules\VatNumberFormat;
+use Ominity\Laravel\Services\OminityRouterService;
 use Ominity\Laravel\Services\VatValidationService;
 
 class OminityServiceProvider extends ServiceProvider
@@ -29,7 +31,12 @@ class OminityServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'ominity');
 
         if ($this->app->runningInConsole()) {
-            $this->publishes([__DIR__.'/../config/ominity.php' => config_path('ominity.php')]);
+            $this->publishes([
+                __DIR__.'/../config/ominity.php' => config_path('ominity.php'),
+                __DIR__.'/../resources/views' => resource_path('views/vendor/ominity'),
+            ]);
+
+            AboutCommand::add('Ominity Laravel', fn () => ['Version' => self::PACKAGE_VERSION]);
 
             $this->commands([
                 PreRenderPagesCommand::class,
@@ -43,6 +50,8 @@ class OminityServiceProvider extends ServiceProvider
                 $config['client_secret']
             );
         });
+
+        Blade::componentNamespace('Ominity\\Laravel\\Views\\Components', 'ominity');
 
         $this->extendSocialite();
         $this->extendValidation();
@@ -81,6 +90,10 @@ class OminityServiceProvider extends ServiceProvider
 
         $this->app->singleton(OminityPageRenderer::class, function ($app) {
             return new OminityPageRenderer($app->make(OminityApiClient::class));
+        });
+
+        $this->app->singleton(OminityRouterService::class, function ($app) {
+            return new OminityRouterService($app->make(OminityApiClient::class), $app['config']['ominity.routes']);
         });
 
         $this->app->singleton(VatValidationService::class, function ($app) {

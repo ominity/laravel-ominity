@@ -39,16 +39,18 @@ class User extends OminityUser implements AuthenticatableContract
         if ($this->currentCustomer) {
             return $this->currentCustomer;
         }
- 
+
         $customerId = Session::get('ominity_customer_account');
- 
+
         if ($customerId) {
             try {
                 $this->currentCustomer = $this->client->users->customers->getFor($this, $customerId);
+
                 return $this->currentCustomer;
-            } catch (\Ominity\Api\Exceptions\ApiException $e) {}
+            } catch (\Ominity\Api\Exceptions\ApiException $e) {
+            }
         }
- 
+
         return null;
     }
 }
