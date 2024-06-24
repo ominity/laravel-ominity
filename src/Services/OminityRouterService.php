@@ -21,15 +21,15 @@ class OminityRouterService
     /**
      * Get the route
      *
-     * @param  Route|\stdClass  $route
+     * @param  Route|\stdClass $route
      * @return string
      */
     public function route($route, $locale = null, $keepQuery = false)
     {
-        $route = app('router')->getRoutes()->getByName($route->name);
-        $requiredParameters = $route->parameterNames();
+        $laravelRoute = app('router')->getRoutes()->getByName($route->name);
+        $requiredParameters = $laravelRoute->parameterNames();
 
-        $filteredParams = array_filter($route->parameters, function ($key) use ($requiredParameters) {
+        $filteredParams = array_filter((array) $route->parameters, function ($key) use ($requiredParameters) {
             return in_array($key, $requiredParameters);
         }, ARRAY_FILTER_USE_KEY);
 
