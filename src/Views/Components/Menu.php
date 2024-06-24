@@ -58,7 +58,7 @@ class Menu extends Component
     {
         $menus = Ominity::api()->cms->menus->all([
             'limit' => 1,
-            'include' => ['rendered'],
+            'include' => 'rendered',
             'filter' => [
                 'identifier' => $this->identifier,
             ],
