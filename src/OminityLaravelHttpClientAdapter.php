@@ -19,7 +19,7 @@ class OminityLaravelHttpClientAdapter implements HttpAdapterInterface
      * @return \stdClass|string|null
      * @throws \Ominity\Api\Exceptions\ApiException
      */
-    public function send($httpMethod, $url, $headers, $httpBody): ?object
+    public function send($httpMethod, $url, $headers, $httpBody)
     {
         $contentType = $headers['Content-Type'] ?? 'application/json';
         unset($headers['Content-Type']);
@@ -36,7 +36,7 @@ class OminityLaravelHttpClientAdapter implements HttpAdapterInterface
         };
     }
 
-    private function handleResponse(Response $response): ?object
+    private function handleResponse(Response $response)
     {
         $contentType = $response->header('Content-Type');
 
@@ -46,7 +46,7 @@ class OminityLaravelHttpClientAdapter implements HttpAdapterInterface
 
         // For binary responses
         if (stripos($contentType, 'application/pdf') !== false || stripos($contentType, 'application/octet-stream') !== false) {
-            return (object) ['body' => $response->body()];
+            return $response->body();
         }
 
         throw new ApiException("Unsupported Content-Type: {$contentType}");
