@@ -1,1 +1,1 @@
-<button type="{{ $field->default }}" class="{{ $field->isInline ? 'form-inline' : '' }} {{ $field->css->classes ?? 'btn btn-primary' }}" style="{{ $style }}" id="{{ $id }}">{{ $field->label }}</button>
+<button type="{{ $field->defaultValue }}" class="{{ $field->isInline ? 'form-inline' : '' }} {{ $field->css->classes ?? 'btn btn-primary' }}" style="{{ $style }}" id="{{ $id }}">{{ $field->label }}</button>
