@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Ominity\Api\Resources\Modules\Forms\Form;
-use Ominity\Api\Types\Modules\Blog\FieldType;
+use Ominity\Api\Types\Modules\Forms\FieldType;
 use Ominity\Laravel\Facades\Ominity;
 
 class FormController extends Controller
