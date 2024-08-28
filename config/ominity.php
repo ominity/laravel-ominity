@@ -56,6 +56,15 @@ return [
         ],
     ],
 
+    'forms' => [
+        'cache' => [
+            'enabled' => env('OMINITY_FORMS_CACHE_ENABLED', true),
+            'expiration' => env('OMINITY_FORMS_CACHE_EXPIRATION', 3600), // Cache expiration time in seconds
+            'store' => env('OMINITY_FORMS_CACHE_STORE', 'file'), // Cache store location
+            'pre_render' => env('OMINITY_FORMS_CACHE_PRERENDER', true), // Enable pre-rendering of menus
+        ],
+    ],
+
     'routes' => [
         'cache' => [
             'enabled' => env('OMINITY_ROUTES_CACHE_ENABLED', true),

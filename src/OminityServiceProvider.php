@@ -28,7 +28,9 @@ class OminityServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->loadRoutesFrom(__DIR__.'/routes/web.php');
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'ominity');
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'ominity');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
