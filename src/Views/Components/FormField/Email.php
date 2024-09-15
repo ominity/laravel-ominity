@@ -37,11 +37,10 @@ class Email extends Component
         $style = '';
         if($field->isInline) {
             $style = 'display: inline-block; ';
-            $style .= 'min-width: 0; ';
-            if($field->width) {
-                $style .= 'flex: 0 0 ' . $field->width . ';';
+            if ($field->width) {
+                $style .= 'width: calc(' . $field->width . ' - 3px);';
             } else {
-                $style .= 'flex: 1;';
+                $style .= 'width: calc(50% - 3px);';
             }
         }
         else if($field->width) {

@@ -5,7 +5,7 @@ namespace Ominity\Laravel\Views\Components\FormField;
 use Illuminate\View\Component;
 use Illuminate\Support\Str;
 
-class Text extends Component
+class Honeypot extends Component
 {
     public $field;
 
@@ -34,22 +34,6 @@ class Text extends Component
             $id = $field->css->id;
         }
 
-        $style = '';
-        if($field->isInline) {
-            $style = 'display: inline-block; ';
-            if ($field->width) {
-                $style .= 'width: calc(' . $field->width . ' - 3px);';
-            } else {
-                $style .= 'width: calc(50% - 3px);';
-            }
-        }
-        else if($field->width) {
-            $style = 'width: ' . $field->width . ';';
-        }
-        else {
-            $style = 'width: 100%;';
-        }
-
-        return view('ominity::components.form-field.text', compact('field', 'id', 'style'));
+        return view('ominity::components.form-field.honeypot', compact('field', 'id'));
     }
 }

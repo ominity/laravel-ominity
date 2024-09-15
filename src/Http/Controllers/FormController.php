@@ -22,40 +22,48 @@ class FormController extends Controller
         $validator->validate();
 
         $form = $this->getForm($request->input('_form'));
-        $data = $request->except('_token', '_form');
+        $data = $request->except('_token', '_form', 'g-recaptcha-response');
 
         $rules = [];
         $messages = [];
-        foreach ($form->fields() as $field) {
-            $fieldRules = [];
+        $attributes = [];
 
+        foreach ($form->fields() as $field) {
             if($field->type == FieldType::METADATA) {
                 foreach ($field->options as $option) {
-                    if(isset($data[$field->id]) && !is_array($data[$field->id])) {
-                        $data[$field->id] = [];
+                    if(! isset($data['field_' . $field->id]) || !is_array($data['field_' . $field->id])) {
+                        $data['field_' . $field->id] = [];
                     }
 
                     switch ($option) {
                         case 'ip_address':
-                            $data[$field->id]['ip_address'] = $request->ip();
+                            $data['field_' . $field->id]['ip_address'] = $request->ip();
                             break;
                         case 'user_agent':
-                            $data[$field->id]['user_agent'] = $request->header('User-Agent');
+                            $data['field_' . $field->id]['user_agent'] = $request->header('User-Agent');
                             break;
                         case 'referrer':
-                            $data[$field->id]['referrer'] = $request->headers->get('referer');
+                            $data['field_' . $field->id]['referrer'] = $request->headers->get('referer');
                             break;
                         case 'locale':
-                            $data[$field->id]['locale'] = app()->getLocale();
+                            $data['field_' . $field->id]['locale'] = app()->getLocale();
                             break;
                     }
                 }
                 continue;
             }
 
+            $attributes['field_' . $field->id] = $field->label ?: '';
+
             if($field->type == FieldType::HONEYPOT) {
-                $rules[$field->id] = ['nullable', 'string', 'size:0'];
+                $rules['field_' . $field->id] = ['nullable', 'string', 'size:0'];
                 continue;
+            }
+
+            $fieldRules = [];
+
+            if ($field->validation->isRequired) {
+                $fieldRules[] = 'required';
             }
 
             if($field->type == FieldType::EMAIL) {
@@ -66,15 +74,11 @@ class FormController extends Controller
                 $fieldRules[] = 'numeric';
             }
 
-            if ($field->validation->isRequired) {
-                $fieldRules[] = 'required';
-            }
-
-            if ($field->validation->minLength) {
+            if (isset($field->validation->minLength)) {
                 $fieldRules[] = 'min:'.$field->validation->minLength;
             }
 
-            if ($field->validation->maxLength) {
+            if (isset($field->validation->maxLength)) {
                 $fieldRules[] = 'max:'.$field->validation->maxLength;
             }
 
@@ -83,15 +87,15 @@ class FormController extends Controller
             }
 
             if ($fieldRules) {
-                $rules[$field->id] = $fieldRules;
+                $rules['field_' . $field->id] = $fieldRules;
 
                 if (!empty($field->validation->message)) {
-                    $messages[$field->id] = $field->validation->message;
+                    $messages['field_' . $field->id] = $field->validation->message;
                 }
             }
         }
 
-        $validator = Validator::make($request->all(), $rules, $messages);
+        $validator = Validator::make($request->all(), $rules, $messages, $attributes);
         $validator->validate();
 
         try {

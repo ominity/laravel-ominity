@@ -12,6 +12,8 @@ class Form extends Component
 
     public string $class;
 
+    public bool $ajax;
+
     /**
      * Create a new component instance.
      *
@@ -19,10 +21,11 @@ class Form extends Component
      * @param  string  $class
      * @return void
      */
-    public function __construct(int $form, string $class = '')
+    public function __construct(int $form, string $class = '', bool $ajax = false)
     {
         $this->formId = $form;
         $this->class = $class;
+        $this->ajax = $ajax;
     }
 
     /**
