@@ -9,15 +9,18 @@ class Link extends Component
 {
     public $item;
 
+    public string $class;
+
     /**
      * Create a new component instance.
      *
      * @param  array  $items
      * @return void
      */
-    public function __construct($item, public string $class = '')
+    public function __construct($item, string $class = '')
     {
         $this->item = $item;
+        $this->class = $class;
     }
 
     /**
@@ -27,14 +30,16 @@ class Link extends Component
      */
     public function render()
     {
-        $item = $this->item;
-
-        if ($item->target->resource == 'link') {
-            $href = $item->target->href;
-        } elseif ($item->target->resource == 'route') {
-            $href = Ominity::router()->route($item->target);
+        if ($this->item->target->resource == 'link') {
+            $href = $this->item->target->href;
+        } elseif ($this->item->target->resource == 'route') {
+            $href = Ominity::router()->route($this->item->target);
         }
 
-        return view('ominity::components.menu.link', compact('item', 'href'));
+        return view('ominity::components.menu.link', [
+            'item' => $this->item,
+            'class' => $this->class,
+            'href' => $href,
+        ]);
     }
 }

@@ -1,4 +1,4 @@
-<li class="nav-item dropdown {{ $class }} {{ $item->style->classes ?? '' }}">
+<li class="nav-item dropdown {{ $class ?? '' }} {{ $item->style->classes ?? '' }}">
     <a class="nav-link dropdown-toggle" href="#">
         @if($item->icon)
             <i class="nav-icon {{ $item->icon }}"></i> 

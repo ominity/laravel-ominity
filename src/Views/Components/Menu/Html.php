@@ -8,15 +8,18 @@ class Html extends Component
 {
     public $item;
 
+    public string $class;
+
     /**
      * Create a new component instance.
      *
      * @param  array  $items
      * @return void
      */
-    public function __construct($item, public string $class = '')
+    public function __construct($item, string $class = '')
     {
         $this->item = $item;
+        $this->class = $class;
     }
 
     /**
@@ -26,8 +29,9 @@ class Html extends Component
      */
     public function render()
     {
-        $item = $this->item;
-
-        return view('ominity::components.menu.html', compact('item'));
+        return view('ominity::components.menu.html', [
+            'item' => $this->item,
+            'class' => $this->class,
+        ]);
     }
 }

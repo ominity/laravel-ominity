@@ -8,15 +8,18 @@ class Dropdown extends Component
 {
     public $item;
 
+    public string $class;
+
     /**
      * Create a new component instance.
      *
      * @param  array  $items
      * @return void
      */
-    public function __construct($item, public string $class = '')
+    public function __construct($item, string $class = '')
     {
         $this->item = $item;
+        $this->class = $class;
     }
 
     /**
@@ -26,6 +29,9 @@ class Dropdown extends Component
      */
     public function render()
     {
-        return view('ominity::components.menu.dropdown');
+        return view('ominity::components.menu.dropdown', [
+            'item' => $this->item,
+            'class' => $this->class,
+        ]);
     }
 }
