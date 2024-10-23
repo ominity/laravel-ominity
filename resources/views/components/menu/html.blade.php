@@ -1,3 +1,3 @@
-<li class="nav-item {{ $item->style->classes ?? '' }}">
+<li class="nav-item {{ $class }} {{ $item->style->classes ?? '' }}">
 {!! $item->content !!}
 </li>

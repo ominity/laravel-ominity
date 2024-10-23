@@ -15,7 +15,7 @@ class Link extends Component
      * @param  array  $items
      * @return void
      */
-    public function __construct($item)
+    public function __construct($item, public string $class = '')
     {
         $this->item = $item;
     }
