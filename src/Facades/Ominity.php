@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Facade;
 use Ominity\Api\OminityApiClient;
 use Ominity\Laravel\OminityManager;
 use Ominity\Laravel\OminityPageRenderer;
+use Ominity\Laravel\Services\OminityCartService;
 use Ominity\Laravel\Services\OminityRouterService;
 use Ominity\Laravel\Services\VatValidationService;
 
@@ -16,6 +17,7 @@ use Ominity\Laravel\Services\VatValidationService;
  * @method static OminityPageRenderer renderer()
  * @method static OminityRouterService router()
  * @method static VatValidationService vatValidator()
+ * @method static OminityCartService cart()
  */
 class Ominity extends Facade
 {
