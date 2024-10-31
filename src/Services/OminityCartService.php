@@ -40,35 +40,12 @@ class OminityCartService
         if ($this->cart &&
             $this->cart->type == $type &&
             $this->cart->country == $country &&
-            ($currency === null || $this->cart->totalAmount->currency == $currency)) {
+            ($currency === null || $this->cart->currency == $currency)) {
             return $this->cart;
         }
 
-        $cartId = $this->getCartId();
-        if ($cartId) {
-            $cart = $this->ominity->commerce->carts->get($cartId, [
-                'include' => ['items', 'items.product', 'shippingMethod'],
-                'country' => $country,
-                'currency' => $currency ?? '',
-            ]);
-
-            if ($cart && $cart->type == $type) {
-                $this->cart = $cart;
-                $this->setCartId($cart->id);
-
-                return $this->cart;
-            }
-
-            // update cart from guest to personal
-            if($cart->isGuestCart() && Auth::check() && $type == CartType::PERSONAL) {
-                $cart->userId = Auth::id();
-                $cart = $cart->update();
-
-                $this->cart = $cart;
-                $this->setCartId($cart->id);
-                
-                return $this->cart;
-            }
+        if($type == CartType::GUEST) {
+            return $this->getGuestCart($country, $currency);
         }
 
         if ($type == CartType::PERSONAL || $type == CartType::WISHLIST) {
@@ -83,16 +60,21 @@ class OminityCartService
             ]);
 
             if ($carts->count() > 0) {
-                /** @var Cart $cart */
-                $cart = $carts->first();
-
-                $this->cart = $cart;
-
-                if($cart->isPersonalCart()) {
-                    $this->setCartId($cart->id);
-                }
+                $this->cart = $carts->first();
 
                 return $this->cart;
+            }
+
+            if($type == CartType::PERSONAL) {
+                $guestCart = $this->getGuestCart($country, $currency);
+
+                if($guestCart) {
+                    $this->cart = $guestCart;
+                    $this->cart->userId = Auth::id();
+                    $this->cart->update();
+
+                    return $this->cart;
+                }
             }
         }
 
@@ -115,7 +97,6 @@ class OminityCartService
                 $cart = $carts->first();
 
                 $this->cart = $cart;
-                $this->setCartId($cart->id);
 
                 return $this->cart;
             }
@@ -161,7 +142,7 @@ class OminityCartService
 
         $this->cart = $cart;
 
-        if(! $cart->isWishlistCart()) {
+        if($cart->isGuestCart()) {
             $this->setCartId($cart->id);
         }
 
@@ -366,5 +347,43 @@ class OminityCartService
         }
 
         return CartType::PERSONAL;
+    }
+    
+    /**
+     * Get the guest cart
+     * 
+     * @param  string|null  $country
+     * @param  string|null  $currency
+     * @return Cart|null
+     */
+    protected function getGuestCart($country = null, $currency = null) 
+    {
+        $cartId = $this->getCartId();
+
+        if ($cartId) {
+            try{
+                $cart = $this->ominity->commerce->carts->get($cartId, [
+                    'include' => ['items', 'items.product', 'shippingMethod'],
+                    'country' => $country ?? '',
+                    'currency' => $currency ?? '',
+                ]);
+    
+                if(! $cart->isPending() || ! $cart->isGuestCart()) {
+                    $this->unset();
+                    return null;
+                }
+    
+                $this->cart = $cart;
+                $this->setCartId($cart->id);
+    
+                return $this->cart;
+            }
+            catch(\Exception $e) {
+                $this->unset();
+                return null;
+            }
+        }
+
+        return null;
     }
 }
