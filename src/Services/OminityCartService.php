@@ -40,7 +40,7 @@ class OminityCartService
         if ($this->cart &&
             $this->cart->type == $type &&
             $this->cart->country == $country &&
-            ($currency == null || $this->cart->currency == $currency)) {
+            ($currency === null || $this->cart->totalAmount->currency == $currency)) {
             return $this->cart;
         }
 
@@ -49,13 +49,24 @@ class OminityCartService
             $cart = $this->ominity->commerce->carts->get($cartId, [
                 'include' => ['items', 'items.product', 'shippingMethod'],
                 'country' => $country,
-                'currency' => $currency,
+                'currency' => $currency ?? '',
             ]);
 
-            if ($cart && $this->cart->type == $type) {
+            if ($cart && $cart->type == $type) {
                 $this->cart = $cart;
                 $this->setCartId($cart->id);
 
+                return $this->cart;
+            }
+
+            // update cart from guest to personal
+            if($cart->isGuestCart() && Auth::check() && $type == CartType::PERSONAL) {
+                $cart->userId = Auth::id();
+                $cart = $cart->update();
+
+                $this->cart = $cart;
+                $this->setCartId($cart->id);
+                
                 return $this->cart;
             }
         }
@@ -72,10 +83,14 @@ class OminityCartService
             ]);
 
             if ($carts->count() > 0) {
+                /** @var Cart $cart */
                 $cart = $carts->first();
 
                 $this->cart = $cart;
-                $this->setCartId($cart->id);
+
+                if($cart->isPersonalCart()) {
+                    $this->setCartId($cart->id);
+                }
 
                 return $this->cart;
             }
@@ -90,7 +105,6 @@ class OminityCartService
                 'include' => ['items', 'items.product', 'shippingMethod'],
                 'sort' => '-createdAt',
                 'filter' => [
-                    'user' => Auth::id(),
                     'customer' => $customerUser->customerId,
                     'type' => $type,
                     'status' => CartStatus::PENDING,
@@ -124,7 +138,7 @@ class OminityCartService
 
         $body = [
             'type' => $type,
-            'country' => $country,
+            'country' => $country
         ];
 
         if ($currency) {
@@ -146,7 +160,10 @@ class OminityCartService
         $cart = $this->ominity->commerce->carts->create($body);
 
         $this->cart = $cart;
-        $this->setCartId($cart->id);
+
+        if(! $cart->isWishlistCart()) {
+            $this->setCartId($cart->id);
+        }
 
         return $this->cart;
     }
