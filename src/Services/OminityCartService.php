@@ -17,7 +17,7 @@ class OminityCartService
 
     protected array $config;
 
-    protected ?Cart $cart;
+    protected ?Cart $cart = null;
 
     public function __construct(OminityApiClient $ominity, array $config)
     {
