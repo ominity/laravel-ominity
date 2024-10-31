@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Ominity\Api\Exceptions\ApiException;
 use Ominity\Laravel\Facades\Ominity;
 
-use function Termwind\{render};
+use function Termwind\render;
 
 class PreRenderPagesCommand extends Command
 {

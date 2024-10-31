@@ -19,7 +19,7 @@ class FormField extends Component
     {
         $this->field = $field;
     }
-    
+
     /**
      * Get the view / contents that represent the component.
      *
@@ -29,10 +29,11 @@ class FormField extends Component
     {
         $field = $this->field;
 
-        $componentClass = 'Ominity\\Laravel\\Views\\Components\\FormField\\' . ucfirst($field->type);
+        $componentClass = 'Ominity\\Laravel\\Views\\Components\\FormField\\'.ucfirst($field->type);
 
         if (class_exists($componentClass)) {
             $component = app($componentClass, ['field' => $field]);
+
             return $component->render();
         }
 

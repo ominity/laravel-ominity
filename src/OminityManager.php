@@ -4,14 +4,13 @@ namespace Ominity\Laravel;
 
 use Illuminate\Contracts\Container\Container;
 use Ominity\Api\OminityApiClient;
+use Ominity\Laravel\Services\OminityCartService;
 use Ominity\Laravel\Services\OminityRouterService;
 use Ominity\Laravel\Services\VatValidationService;
 
 class OminityManager
 {
-    public function __construct(private Container $app)
-    {
-    }
+    public function __construct(private Container $app) {}
 
     public function api(): OminityApiClient
     {
@@ -31,5 +30,10 @@ class OminityManager
     public function vatValidator(): VatValidationService
     {
         return $this->app->make(VatValidationService::class);
+    }
+
+    public function cart(): OminityCartService
+    {
+        return $this->app->make(OminityCartService::class);
     }
 }

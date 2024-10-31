@@ -7,6 +7,7 @@ use Illuminate\View\Component;
 class Canonical extends Component
 {
     public $routes;
+
     public $keepQuery;
 
     /**

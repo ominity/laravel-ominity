@@ -17,8 +17,6 @@ class Form extends Component
     /**
      * Create a new component instance.
      *
-     * @param  int  $form
-     * @param  string  $class
      * @return void
      */
     public function __construct(int $form, string $class = '', bool $ajax = false)

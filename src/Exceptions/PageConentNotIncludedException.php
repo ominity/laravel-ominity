@@ -28,7 +28,7 @@ class PageConentNotIncludedException extends \Exception
         $previous = null
     ) {
         $this->plainMessage = $message;
-        $this->raisedAt = new \DateTimeImmutable();
+        $this->raisedAt = new \DateTimeImmutable;
         $formattedRaisedAt = $this->raisedAt->format(DateTime::ISO8601);
 
         $enhancedMessage = "[{$formattedRaisedAt}] ".$message;

@@ -2,8 +2,8 @@
 
 namespace Ominity\Laravel\Views\Components\FormField;
 
-use Illuminate\View\Component;
 use Illuminate\Support\Str;
+use Illuminate\View\Component;
 
 class Honeypot extends Component
 {
@@ -30,7 +30,7 @@ class Honeypot extends Component
         $field = $this->field;
 
         $id = Str::random(10);
-        if(isset($field->css->id)) {
+        if (isset($field->css->id)) {
             $id = $field->css->id;
         }
 

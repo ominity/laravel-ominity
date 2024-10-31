@@ -14,12 +14,13 @@ use Ominity\Laravel\Rules\PaymentMethodEnabled;
 use Ominity\Laravel\Rules\PaymentMethodMandateSupport;
 use Ominity\Laravel\Rules\VatNumber;
 use Ominity\Laravel\Rules\VatNumberFormat;
+use Ominity\Laravel\Services\OminityCartService;
 use Ominity\Laravel\Services\OminityRouterService;
 use Ominity\Laravel\Services\VatValidationService;
 
 class OminityServiceProvider extends ServiceProvider
 {
-    const PACKAGE_VERSION = '1.0.0';
+    const PACKAGE_VERSION = '1.0.4';
 
     /**
      * Boot the service provider.
@@ -100,6 +101,10 @@ class OminityServiceProvider extends ServiceProvider
 
         $this->app->singleton(VatValidationService::class, function ($app) {
             return new VatValidationService($app->make(OminityApiClient::class));
+        });
+
+        $this->app->singleton(OminityCartService::class, function ($app) {
+            return new OminityCartService($app->make(OminityApiClient::class), $app['config']['ominity.cart']);
         });
 
         $this->app->singleton(OminityManager::class);

@@ -18,7 +18,7 @@ class MenuItem extends Component
     {
         $this->item = $item;
     }
-    
+
     /**
      * Get the view / contents that represent the component.
      *
@@ -28,10 +28,11 @@ class MenuItem extends Component
     {
         $item = $this->item;
 
-        $componentClass = 'Ominity\\Laravel\\Views\\Components\\Menu\\' . ucfirst($item->type);
+        $componentClass = 'Ominity\\Laravel\\Views\\Components\\Menu\\'.ucfirst($item->type);
 
         if (class_exists($componentClass)) {
             $component = app($componentClass, ['item' => $item]);
+
             return $component->render();
         }
 

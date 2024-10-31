@@ -21,7 +21,7 @@ class OminityRouterService
     /**
      * Get the route
      *
-     * @param  Route|\stdClass $route
+     * @param  Route|\stdClass  $route
      * @return string
      */
     public function route($route, $locale = null, $keepQuery = false)
@@ -33,7 +33,7 @@ class OminityRouterService
             return in_array($key, $requiredParameters);
         }, ARRAY_FILTER_USE_KEY);
 
-        if($locale) {
+        if ($locale) {
             $filteredParams['locale'] = $locale;
         }
 

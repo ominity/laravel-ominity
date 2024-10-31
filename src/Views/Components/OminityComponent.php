@@ -75,7 +75,7 @@ abstract class OminityComponent extends Component
                 // Initialize a single nested component
                 $componentClass = config('ominity.pages.components.'.$field->component);
                 if ($componentClass && class_exists($componentClass)) {
-                    $fields->$key = new $componentClass($field->fields ?? new stdClass());
+                    $fields->$key = new $componentClass($field->fields ?? new stdClass);
                 }
             } elseif (is_array($field)) {
                 // Initialize an array of nested components
@@ -83,7 +83,7 @@ abstract class OminityComponent extends Component
                     if (is_object($item) && isset($item->component)) {
                         $componentClass = config('ominity.pages.components.'.$item->component);
                         if ($componentClass && class_exists($componentClass)) {
-                            return new $componentClass($item->fields ?? new stdClass());
+                            return new $componentClass($item->fields ?? new stdClass);
                         }
                     }
 
