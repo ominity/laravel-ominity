@@ -299,7 +299,7 @@ class OminityCartService
      */
     protected function getCartId()
     {
-        return Cookie::get($this->config['cookie_name']) ?? Session::get('ominity_cart');
+        return Session::get('ominity_cart') ?? Cookie::get($this->config['cookie_name']);
     }
 
     /**
