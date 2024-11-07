@@ -32,9 +32,10 @@ class Menu extends Component
     public function render()
     {
         $config = config('ominity.menus.cache');
-        $cacheKey = 'menu-html-'.$this->identifier.'-'.app()->getLocale();
+        
+        if ($config['enabled'] == 'true') {
+            $cacheKey = 'menu-html-'.$this->identifier.'-'.app()->getLocale();
 
-        if ($config['enabled']) {
             $menuHtml = Cache::store($config['store'])->remember(
                 $cacheKey,
                 $config['expiration'],
@@ -56,15 +57,42 @@ class Menu extends Component
      */
     protected function fetchAndRenderMenu()
     {
-        $menus = Ominity::api()->cms->menus->all([
-            'limit' => 1,
-            'include' => 'rendered',
-            'filter' => [
-                'identifier' => $this->identifier,
-            ],
-        ]);
+        $config = config('ominity.menus.cache');
+        if ($config['enabled'] === 'data') {
+            $cacheKey = 'menu-'.$this->identifier.'-'.app()->getLocale();
 
-        $menu = $menus->first();
+            $menu = Cache::store($config['store'])->remember(
+                $cacheKey,
+                $config['expiration'],
+                function () {
+                    $menus = Ominity::api()->cms->menus->all([
+                        'limit' => 1,
+                        'include' => 'rendered',
+                        'filter' => [
+                            'identifier' => $this->identifier,
+                        ],
+                    ]);
+
+                    if($menus->count() > 0) {
+                        return $menus->first();
+                    }
+
+                    return null;
+                }
+            );
+        }
+        else {
+            $menus = Ominity::api()->cms->menus->all([
+                'limit' => 1,
+                'include' => 'rendered',
+                'filter' => [
+                    'identifier' => $this->identifier,
+                ],
+            ]);
+
+            $menu = $menus->first();
+        }
+
         $class = $this->class;
 
         return view('ominity::components.menu', compact('menu', 'class'))->render();
