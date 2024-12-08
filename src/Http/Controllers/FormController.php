@@ -14,6 +14,10 @@ class FormController extends Controller
 {
     public function submit(Request $request)
     {
+        if($request->input('_locale')) {
+            app()->setLocale($request->input('_locale'));
+        }
+
         // Validate the form ID first
         $validator = Validator::make($request->all(), [
             '_form' => ['required', 'numeric'],

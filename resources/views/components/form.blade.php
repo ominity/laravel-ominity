@@ -1,6 +1,8 @@
 <form action="{{ route('ominity.form.submit') }}" method="POST" class="{{ $class }}" novalidate>
     <input type="hidden" name="_token" value="">
     <input type="hidden" name="_form" value="{{ $form->id }}">
+    <input type="hidden" name="_locale" value="{{ app()->getLocale() }}">
+    
     @if(isset($above))
         {{ $above }}
     @endif
