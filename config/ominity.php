@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (c) 2024, Ominity (Connexeon BV)
  * All rights reserved.
@@ -85,9 +86,9 @@ return [
                 'email',
                 'sms',
                 'authenticator',
-            ]
-        ]
-    ]
+            ],
+        ],
+    ],
 
     // If you intend on using Ominity User Provider, place the following in the 'config/auth.php'
     // 'guards' => [

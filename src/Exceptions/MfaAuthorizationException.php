@@ -15,12 +15,13 @@ class MfaAuthorizationException extends Exception
 
     /**
      * Create a new MFA authorization exception.
-     * 
+     *
      * @param  string  $message
      * @param  string|null  $redirectTo
      * @return void
      */
-    public function __construct($message = 'Unauthorized. Multi-factor authentication not enabled.', $redirectTo = null) {
+    public function __construct($message = 'Unauthorized. Multi-factor authentication not enabled.', $redirectTo = null)
+    {
         parent::__construct($message);
 
         $this->redirectTo = $redirectTo;

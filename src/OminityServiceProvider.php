@@ -61,7 +61,7 @@ class OminityServiceProvider extends ServiceProvider
         if (class_exists(\Laravel\Socialite\Contracts\Factory::class)) {
             $this->extendSocialite();
         }
-        
+
         $this->extendValidation();
     }
 

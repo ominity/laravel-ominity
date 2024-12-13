@@ -23,7 +23,6 @@ class AuthenticateMfa
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @return mixed
      *
      * @throws MfaNotEnabledException
@@ -39,14 +38,14 @@ class AuthenticateMfa
         $user = Auth::user();
 
         if (! $user) {
-            throw new AuthenticationException();
+            throw new AuthenticationException;
         }
 
-        if (!$user->isMfaEnabled && $attribute === 'strict') {
+        if (! $user->isMfaEnabled && $attribute === 'strict') {
             $this->unauthorized($request);
         }
 
-        if ($user->isMfaEnabled && !$user->isMfaValidated()) {
+        if ($user->isMfaEnabled && ! $user->isMfaValidated()) {
             $this->unauthenticated($request);
         }
 
@@ -86,7 +85,6 @@ class AuthenticateMfa
     /**
      * Get the path the user should be redirected to when they are not authenticated.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return string|null
      */
     protected function redirectTo(Request $request)

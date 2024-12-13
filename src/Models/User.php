@@ -2,7 +2,6 @@
 
 namespace Ominity\Laravel\Models;
 
-use DateTime;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Support\Facades\Session;
@@ -63,7 +62,6 @@ class User extends OminityUser implements AuthenticatableContract
      *
      * @param  string  $code
      * @param  string|null  $method
-     * @return bool
      */
     public function validateMfaCode($code, $method): bool
     {
@@ -74,7 +72,7 @@ class User extends OminityUser implements AuthenticatableContract
                 'userAgent' => request()->header('User-Agent'),
             ]);
 
-            if($success) {
+            if ($success) {
                 $this->mfa_validated_at = now();
 
                 Session::put('ominity_mfa_validated_at', $this->mfa_validated_at);
@@ -82,8 +80,7 @@ class User extends OminityUser implements AuthenticatableContract
             }
 
             return $success;
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }
