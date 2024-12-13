@@ -12,17 +12,13 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-
-      - name: Install Pint
-        run: composer global require laravel/pint
-
-      - name: Run Pint
-        run: pint
+      - name: "laravel-pint"
+        uses: aglipanci/laravel-pint-action@0.1.0
+        with:
+          preset: laravel
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Fix styling
-          token: ${{ secrets.GITHUB_TOKEN }}
+          skip_fetch: true
