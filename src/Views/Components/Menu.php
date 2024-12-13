@@ -32,7 +32,7 @@ class Menu extends Component
     public function render()
     {
         $config = config('ominity.menus.cache');
-        
+
         if ($config['enabled'] == 'true') {
             $cacheKey = 'menu-html-'.$this->identifier.'-'.app()->getLocale();
 
@@ -73,15 +73,14 @@ class Menu extends Component
                         ],
                     ]);
 
-                    if($menus->count() > 0) {
+                    if ($menus->count() > 0) {
                         return $menus->first();
                     }
 
                     return null;
                 }
             );
-        }
-        else {
+        } else {
             $menus = Ominity::api()->cms->menus->all([
                 'limit' => 1,
                 'include' => 'rendered',

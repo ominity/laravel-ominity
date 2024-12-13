@@ -5,18 +5,16 @@ namespace Ominity\Laravel\Listeners;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Support\Facades\Session;
 
-class UnsetCustomerSession
+class ClearUserSession
 {
     /**
      * Create the event listener.
-     *
-     * @return void
      */
     public function __construct()
     {
         //
     }
-
+    
     /**
      * Handle the event.
      *
@@ -24,6 +22,7 @@ class UnsetCustomerSession
      */
     public function handle(Logout $event)
     {
+        Session::forget('ominity_mfa_validated_at');
         Session::forget('ominity_customer_account');
         Session::save();
     }

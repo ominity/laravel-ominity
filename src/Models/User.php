@@ -2,6 +2,7 @@
 
 namespace Ominity\Laravel\Models;
 
+use DateTime;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Support\Facades\Session;
@@ -12,11 +13,6 @@ class User extends OminityUser implements AuthenticatableContract
     use Authenticatable;
 
     protected $currentCustomer;
-
-    public function getKeyName()
-    {
-        return 'id';
-    }
 
     /**
      * Set the current customer in the session.
@@ -51,6 +47,57 @@ class User extends OminityUser implements AuthenticatableContract
             }
         }
 
+        return null;
+    }
+
+    /**
+     * Is the user validated with MFA.
+     */
+    public function isMfaValidated(): bool
+    {
+        return Session::has('ominity_mfa_validated_at');
+    }
+
+    /**
+     * Validate the user with MFA.
+     *
+     * @param  string  $code
+     * @param  string|null  $method
+     * @return bool
+     */
+    public function validateMfaCode($code, $method): bool
+    {
+        try {
+            $success = $this->client->users->mfa->validateForId($this->id, $method, [
+                'code' => $code,
+                'ipAddress' => request()->ip(),
+                'userAgent' => request()->header('User-Agent'),
+            ]);
+
+            if($success) {
+                $this->mfa_validated_at = now();
+
+                Session::put('ominity_mfa_validated_at', $this->mfa_validated_at);
+                Session::save();
+            }
+
+            return $success;
+        }
+        catch(\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Laravel Authenticatable methods
+     * */
+    public function getKeyName()
+    {
+        return 'id';
+    }
+
+    public function getRememberTokenName()
+    {
         return null;
     }
 }

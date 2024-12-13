@@ -44,7 +44,7 @@ class OminityCartService
             return $this->cart;
         }
 
-        if($type == CartType::GUEST) {
+        if ($type == CartType::GUEST) {
             return $this->getGuestCart($country, $currency);
         }
 
@@ -65,10 +65,10 @@ class OminityCartService
                 return $this->cart;
             }
 
-            if($type == CartType::PERSONAL) {
+            if ($type == CartType::PERSONAL) {
                 $guestCart = $this->getGuestCart($country, $currency);
 
-                if($guestCart) {
+                if ($guestCart) {
                     $this->cart = $guestCart;
                     $this->cart->userId = Auth::id();
                     $this->cart->update();
@@ -119,7 +119,7 @@ class OminityCartService
 
         $body = [
             'type' => $type,
-            'country' => $country
+            'country' => $country,
         ];
 
         if ($currency) {
@@ -142,7 +142,7 @@ class OminityCartService
 
         $this->cart = $cart;
 
-        if($cart->isGuestCart()) {
+        if ($cart->isGuestCart()) {
             $this->setCartId($cart->id);
         }
 
@@ -348,38 +348,39 @@ class OminityCartService
 
         return CartType::PERSONAL;
     }
-    
+
     /**
      * Get the guest cart
-     * 
+     *
      * @param  string|null  $country
      * @param  string|null  $currency
      * @return Cart|null
      */
-    protected function getGuestCart($country = null, $currency = null) 
+    protected function getGuestCart($country = null, $currency = null)
     {
         $cartId = $this->getCartId();
 
         if ($cartId) {
-            try{
+            try {
                 $cart = $this->ominity->commerce->carts->get($cartId, [
                     'include' => ['items', 'items.product', 'shippingMethod'],
                     'country' => $country ?? '',
                     'currency' => $currency ?? '',
                 ]);
-    
-                if(! $cart->isPending() || ! $cart->isGuestCart()) {
+
+                if (! $cart->isPending() || ! $cart->isGuestCart()) {
                     $this->unset();
+
                     return null;
                 }
-    
+
                 $this->cart = $cart;
                 $this->setCartId($cart->id);
-    
+
                 return $this->cart;
-            }
-            catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $this->unset();
+
                 return null;
             }
         }

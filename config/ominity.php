@@ -78,6 +78,17 @@ return [
         'cookie_expiration' => env('OMINITY_CART_COOKIE_EXPIRATION', 60 * 24 * 30), // 30 days
     ],
 
+    'users' => [
+        'mfa' => [
+            'enabled' => env('OMINITY_MFA_ENABLED', false),
+            'methods' => [
+                'email',
+                'sms',
+                'authenticator',
+            ]
+        ]
+    ]
+
     // If you intend on using Ominity User Provider, place the following in the 'config/auth.php'
     // 'guards' => [
     //      // Other guards...

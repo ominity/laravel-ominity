@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Ominity\Api\OminityApiClient;
 use Ominity\Laravel\Console\Commands\PreRenderPagesCommand;
+use Ominity\Laravel\Http\Middleware\AuthenticateMfa;
+use Ominity\Laravel\Providers\EventServiceProvider;
 use Ominity\Laravel\Rules\PaymentMethodEnabled;
 use Ominity\Laravel\Rules\PaymentMethodMandateSupport;
 use Ominity\Laravel\Rules\VatNumber;
@@ -20,7 +22,7 @@ use Ominity\Laravel\Services\VatValidationService;
 
 class OminityServiceProvider extends ServiceProvider
 {
-    const PACKAGE_VERSION = '1.0.12';
+    const PACKAGE_VERSION = '1.1.0';
 
     /**
      * Boot the service provider.
@@ -69,6 +71,8 @@ class OminityServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/ominity.php', 'ominity');
 
+        $this->app->register(EventServiceProvider::class);
+
         $this->app->singleton(
             OminityApiClient::class,
             function (Container $app) {
@@ -107,9 +111,11 @@ class OminityServiceProvider extends ServiceProvider
             return new OminityCartService($app->make(OminityApiClient::class), $app['config']['ominity.cart']);
         });
 
-        $this->app->singleton(OminityManager::class);
+        $this->app->singleton(AuthenticateMfa::class, function ($app) {
+            return new AuthenticateMfa($app['config']['ominity.users.mfa']);
+        });
 
-        $this->app->register(EventServiceProvider::class);
+        $this->app->singleton(OminityManager::class);
     }
 
     /**

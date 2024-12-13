@@ -15,13 +15,13 @@ class Base58
         $num = gmp_init(bin2hex($data), 16);
 
         while (gmp_cmp($num, 0) > 0) {
-            list($num, $rem) = gmp_div_qr($num, $baseCount);
-            $encoded = self::$alphabet[gmp_intval($rem)] . $encoded;
+            [$num, $rem] = gmp_div_qr($num, $baseCount);
+            $encoded = self::$alphabet[gmp_intval($rem)].$encoded;
         }
 
         foreach (str_split($data) as $byte) {
             if ($byte === "\x00") {
-                $encoded = self::$alphabet[0] . $encoded;
+                $encoded = self::$alphabet[0].$encoded;
             } else {
                 break;
             }
@@ -49,7 +49,7 @@ class Base58
         // Add leading zero bytes
         foreach (str_split($data) as $char) {
             if ($char === self::$alphabet[0]) {
-                $decoded = "\x00" . $decoded;
+                $decoded = "\x00".$decoded;
             } else {
                 break;
             }
