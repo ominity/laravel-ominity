@@ -58,7 +58,10 @@ class OminityServiceProvider extends ServiceProvider
 
         Blade::componentNamespace('Ominity\\Laravel\\Views\\Components', 'ominity');
 
-        $this->extendSocialite();
+        if (class_exists(\Laravel\Socialite\Contracts\Factory::class)) {
+            $this->extendSocialite();
+        }
+        
         $this->extendValidation();
     }
 
