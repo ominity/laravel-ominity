@@ -22,3 +22,4 @@ jobs:
         with:
           commit_message: Fix styling
           skip_fetch: true
+          branch: ${{ github.head_ref }}
