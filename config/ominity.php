@@ -90,6 +90,14 @@ return [
         ],
     ],
 
+    'svg' => [
+        'cache' => [
+            'enabled' => env('OMINITY_SVG_CACHE_ENABLED', true),
+            'expiration' => env('OMINITY_SVG_CACHE_EXPIRATION', 2592000), // 30 days
+            'store' => env('OMINITY_SVG_CACHE_STORE', 'file'),
+        ],
+    ]
+
     // If you intend on using Ominity User Provider, place the following in the 'config/auth.php'
     // 'guards' => [
     //      // Other guards...
