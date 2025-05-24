@@ -12,23 +12,18 @@ class SvgHelper
     /**
      * Retrieve and optionally inject width, height, and CSS classes into an external SVG.
      *
-     * @param string $url
-     * @param string|null $width
-     * @param string|null $height
-     * @param string|null $cssClass
-     * @param bool $force Ignore cache and refresh
-     * @return string|null
+     * @param  bool  $force  Ignore cache and refresh
      */
     public static function fetchSvg(string $url, ?string $width = null, ?string $height = null, ?string $cssClass = null, bool $force = false): ?string
     {
-        if (!self::isSvg($url)) {
+        if (! self::isSvg($url)) {
             return null;
         }
 
         $cacheEnabled = Config::get('ominity.svg.cache.enabled', true);
         $cacheStore = Config::get('ominity.svg.cache.store', 'file');
         $cacheSeconds = Config::get('ominity.svg.cache.expiration', 3600);
-        $cacheKey = 'svg_cache_' . md5($url . $width . $height . $cssClass);
+        $cacheKey = 'svg_cache_'.md5($url.$width.$height.$cssClass);
         $cache = Cache::store($cacheStore);
 
         if ($cacheEnabled) {
@@ -37,6 +32,7 @@ class SvgHelper
                 if ($svg !== null) {
                     $cache->put($cacheKey, $svg, $cacheSeconds);
                 }
+
                 return $svg;
             }
 
@@ -50,13 +46,11 @@ class SvgHelper
 
     /**
      * Check if a given URL points to an SVG file (based on extension).
-     *
-     * @param string $url
-     * @return bool
      */
     public static function isSvg(string $url): bool
     {
         $path = parse_url($url, PHP_URL_PATH);
+
         return $path && str_ends_with(strtolower($path), '.svg');
     }
 
@@ -77,7 +71,7 @@ class SvgHelper
                 Log::warning("SvgHelper: Failed to fetch SVG from {$url}, status {$response->status()}");
             }
         } catch (\Exception $e) {
-            Log::warning("SvgHelper: Exception fetching SVG from {$url}: " . $e->getMessage());
+            Log::warning("SvgHelper: Exception fetching SVG from {$url}: ".$e->getMessage());
         }
 
         return null;
@@ -92,22 +86,22 @@ class SvgHelper
             if ($cssClass) {
                 if (preg_match('/class=["\']([^"\']*)["\']/', $attributes, $classMatch)) {
                     $existingClasses = $classMatch[1];
-                    $newClasses = trim($existingClasses . ' ' . $cssClass);
-                    $attributes = preg_replace('/class=["\']([^"\']*)["\']/', 'class="' . e($newClasses) . '"', $attributes);
+                    $newClasses = trim($existingClasses.' '.$cssClass);
+                    $attributes = preg_replace('/class=["\']([^"\']*)["\']/', 'class="'.e($newClasses).'"', $attributes);
                 } else {
-                    $attributes .= ' class="' . e($cssClass) . '"';
+                    $attributes .= ' class="'.e($cssClass).'"';
                 }
             }
 
             // Inject width and height
             if ($width) {
-                $attributes .= ' width="' . e($width) . '"';
+                $attributes .= ' width="'.e($width).'"';
             }
             if ($height) {
-                $attributes .= ' height="' . e($height) . '"';
+                $attributes .= ' height="'.e($height).'"';
             }
 
-            return '<svg' . $attributes . '>';
+            return '<svg'.$attributes.'>';
         }, $svg);
     }
 }
