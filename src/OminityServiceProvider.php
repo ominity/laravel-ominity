@@ -79,6 +79,7 @@ class OminityServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/ominity.php', 'ominity');
 
         $this->app->register(EventServiceProvider::class);
+        $this->app->register(OminityFrontendServiceProvider::class);
 
         $this->app->singleton(
             OminityApiClient::class,
