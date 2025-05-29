@@ -2,8 +2,8 @@
 
 namespace Ominity\Laravel;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
 
 class OminityFrontendServiceProvider extends ServiceProvider
 {
@@ -33,7 +33,7 @@ HTML;
 
         Blade::directive('ominityScripts', function () {
             $packageVersion = OminityServiceProvider::PACKAGE_VERSION;
-            $script = asset('vendor/ominity/ominity.umd.js') . "?v={$packageVersion}";
+            $script = asset('vendor/ominity/ominity.umd.js')."?v={$packageVersion}";
 
             return <<<HTML
 <script src="{$script}"></script>

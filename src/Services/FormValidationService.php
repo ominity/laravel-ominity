@@ -10,10 +10,6 @@ class FormValidationService
 {
     /**
      * Validate the incoming request using form-defined rules.
-     *
-     * @param Request $request
-     * @param $form
-     * @return array
      */
     public function validate(Request $request, $form): array
     {
@@ -33,9 +29,6 @@ class FormValidationService
 
     /**
      * Build the validation rules, messages, and attributes for a form.
-     *
-     * @param $form
-     * @return array
      */
     public function build($form): array
     {
@@ -50,6 +43,7 @@ class FormValidationService
 
             if ($field->type == FieldType::HONEYPOT) {
                 $rules[$fieldKey] = ['nullable', 'string', 'size:0'];
+
                 continue;
             }
 
@@ -68,21 +62,21 @@ class FormValidationService
             }
 
             if (isset($field->validation->minLength)) {
-                $fieldRules[] = 'min:' . $field->validation->minLength;
+                $fieldRules[] = 'min:'.$field->validation->minLength;
             }
 
             if (isset($field->validation->maxLength)) {
-                $fieldRules[] = 'max:' . $field->validation->maxLength;
+                $fieldRules[] = 'max:'.$field->validation->maxLength;
             }
 
-            if (!empty($field->validation->rules)) {
+            if (! empty($field->validation->rules)) {
                 $fieldRules = array_merge($fieldRules, $field->validation->rules);
             }
 
             if ($fieldRules) {
                 $rules[$fieldKey] = $fieldRules;
 
-                if (!empty($field->validation->message)) {
+                if (! empty($field->validation->message)) {
                     $messages[$fieldKey] = $field->validation->message;
                 }
             }

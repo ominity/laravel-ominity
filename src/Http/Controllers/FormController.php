@@ -33,7 +33,7 @@ class FormController extends Controller
 
         $form = $this->getForm($request->input('_form'));
 
-        if (!$form) {
+        if (! $form) {
             if ($request->ajax()) {
                 return response()->json(['success' => false, 'message' => __('ominity::forms.not_found')]);
             }
@@ -53,7 +53,7 @@ class FormController extends Controller
         foreach ($form->fields() as $field) {
             if ($field->type === FieldType::METADATA) {
                 $fieldKey = $field->name;
-                if (!isset($data[$fieldKey])) {
+                if (! isset($data[$fieldKey])) {
                     $data[$fieldKey] = [];
                 }
 
@@ -130,7 +130,7 @@ class FormController extends Controller
     {
         $token = $request->input('g-recaptcha-response');
 
-        if (!$token) {
+        if (! $token) {
             abort(422, __('ominity::forms.recaptcha_missing'));
         }
 

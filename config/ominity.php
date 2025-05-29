@@ -69,7 +69,7 @@ return [
             'site_key' => env('OMINITY_FORMS_RECAPTCHA_SITE_KEY', ''),
             'secret_key' => env('OMINITY_FORMS_RECAPTCHA_SECRET_KEY', ''),
             'version' => env('OMINITY_FORMS_RECAPTCHA_VERSION', 'v2'),
-            'score' => env('OMINITY_FORMS_RECAPTCHA_SCORE', 0.5) // Minimum score for reCAPTCHA v3
+            'score' => env('OMINITY_FORMS_RECAPTCHA_SCORE', 0.5), // Minimum score for reCAPTCHA v3
         ],
     ],
 
