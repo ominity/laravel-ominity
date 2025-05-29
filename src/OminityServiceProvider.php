@@ -22,7 +22,7 @@ use Ominity\Laravel\Services\VatValidationService;
 
 class OminityServiceProvider extends ServiceProvider
 {
-    const PACKAGE_VERSION = '1.1.6';
+    const PACKAGE_VERSION = '1.1.7';
 
     /**
      * Boot the service provider.

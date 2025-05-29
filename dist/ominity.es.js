@@ -1,100 +1,112 @@
-const r = {
+const c = {
   config: {},
   init() {
     document.querySelectorAll("form.ominity-form[data-form]").forEach((e) => {
       var t;
-      const n = e.getAttribute("data-form") || "", a = e.getAttribute("data-recaptcha"), d = (t = document.querySelector('meta[name="recaptcha-site-key"]')) == null ? void 0 : t.getAttribute("content");
-      e.addEventListener("submit", (o) => {
-        const s = new CustomEvent("form:submit", { detail: { formId: n, recaptchaVersion: a }, cancelable: !0 });
+      const a = e.getAttribute("data-form") || "", i = e.getAttribute("data-recaptcha"), o = (t = document.querySelector('meta[name="recaptcha-site-key"]')) == null ? void 0 : t.getAttribute("content");
+      e.addEventListener("submit", (r) => {
+        const s = new CustomEvent("form:submit", { detail: { formId: a, recaptchaVersion: i }, cancelable: !0 });
         if (!e.dispatchEvent(s)) {
-          o.preventDefault();
+          r.preventDefault();
           return;
         }
-        if (r.config.disableSubmitDuringRequest !== !1) {
-          const c = e.querySelector('button[type="submit"]');
-          c && (c.disabled = !0, c.classList.add("disabled"));
-        }
-        if (a === "v3") {
+        if (c.disableSubmitButtons(e), i === "v3") {
           if (typeof grecaptcha > "u") {
             console.warn("reCAPTCHA v3 is not loaded.");
             return;
           }
-          let c = e.querySelector('input[name="g-recaptcha-response"]');
-          c || (c = document.createElement("input"), c.type = "hidden", c.name = "g-recaptcha-response", e.appendChild(c)), c.value === "" && (o.preventDefault(), grecaptcha.ready(() => {
-            grecaptcha.execute(d, { action: "submit" }).then((u) => {
-              c.value = u, r.submitForm(e, n);
+          let n = e.querySelector('input[name="g-recaptcha-response"]');
+          n || (n = document.createElement("input"), n.type = "hidden", n.name = "g-recaptcha-response", e.appendChild(n)), n.value === "" && (r.preventDefault(), grecaptcha.ready(() => {
+            grecaptcha.execute(o, { action: "submit" }).then((d) => {
+              n.value = d, c.submitForm(e, a);
             });
           }));
-        } else e.getAttribute("data-role") === "ajax" && (o.preventDefault(), r.submitForm(e, n));
+        } else e.getAttribute("data-role") === "ajax" && (r.preventDefault(), c.submitForm(e, a));
       });
     });
   },
-  submitForm(e, n) {
-    e.getAttribute("data-role") === "ajax" ? this.handleFormAjaxSubmit(e, n) : e.submit();
+  submitForm(e, a) {
+    e.getAttribute("data-role") === "ajax" ? this.handleFormAjaxSubmit(e, a) : e.submit();
   },
-  handleFormAjaxSubmit(e, n) {
-    var d;
-    const a = new FormData(e);
-    fetch(e.action, {
+  handleFormAjaxSubmit(e, a) {
+    var o;
+    const i = new FormData(e);
+    e.querySelectorAll(".alert.alert-success").forEach((t) => t.remove()), fetch(e.action, {
       method: e.method || "POST",
-      body: a,
+      body: i,
       headers: {
         "X-Requested-With": "XMLHttpRequest",
-        "X-CSRF-TOKEN": ((d = document.querySelector('meta[name="csrf-token"]')) == null ? void 0 : d.getAttribute("content")) || ""
+        "X-CSRF-TOKEN": ((o = document.querySelector('meta[name="csrf-token"]')) == null ? void 0 : o.getAttribute("content")) || ""
       }
     }).then((t) => t.json()).then((t) => {
       if (e.getAttribute("data-recaptcha") === "v3") {
         const s = e.querySelector('input[name="g-recaptcha-response"]');
         s && (s.value = "");
       }
-      if (e.querySelectorAll(".has-validation").forEach((s) => s.classList.remove("has-validation")), e.querySelectorAll(".is-invalid").forEach((s) => s.classList.remove("is-invalid")), e.querySelectorAll(".invalid-feedback").forEach((s) => s.remove()), e.querySelectorAll(".alert.alert-success").forEach((s) => s.remove()), e.dispatchEvent(new CustomEvent("form:submitted", { detail: { formId: n, data: t } })), t.success) {
+      if (c.enableSubmitButtons(e), e.querySelectorAll(".has-validation").forEach((s) => s.classList.remove("has-validation")), e.querySelectorAll(".is-invalid").forEach((s) => s.classList.remove("is-invalid")), e.querySelectorAll(".invalid-feedback").forEach((s) => s.remove()), e.dispatchEvent(new CustomEvent("form:submitted", { detail: { formId: a, data: t } })), t.success) {
         e.reset();
-        const s = new CustomEvent("form:success", { detail: { formId: n, data: t }, cancelable: !0 });
+        const s = new CustomEvent("form:success", { detail: { formId: a, data: t }, cancelable: !0 });
         if (!!e.dispatchEvent(s)) {
-          const i = document.createElement("div");
-          i.className = "alert alert-success", i.textContent = (t == null ? void 0 : t.message) || "Your form was successfully submitted.", e.prepend(i);
+          const n = document.createElement("div");
+          n.className = "alert alert-success", n.textContent = (t == null ? void 0 : t.message) || "Your form was successfully submitted.", e.prepend(n);
         }
       } else if (t.errors) {
-        const s = new CustomEvent("form:errors", { detail: { formId: n, data: t }, cancelable: !0 });
-        !e.dispatchEvent(s) || r.handleFormErrors(e, t.errors);
+        const s = new CustomEvent("form:errors", { detail: { formId: a, data: t }, cancelable: !0 });
+        !e.dispatchEvent(s) || c.handleFormErrors(e, t.errors);
       } else
-        e.dispatchEvent(new CustomEvent("form:unknown", { detail: { formId: n, data: t } }));
+        e.dispatchEvent(new CustomEvent("form:unknown", { detail: { formId: a, data: t } }));
     }).catch((t) => {
-      console.error("Form submit error:", t), e.dispatchEvent(new CustomEvent("form:fail", { detail: { formId: n, error: t } }));
+      console.error("Form submit error:", t), e.dispatchEvent(new CustomEvent("form:fail", { detail: { formId: a, error: t } }));
     });
   },
-  handleFormErrors(e, n) {
-    e.querySelectorAll(".has-validation").forEach((a) => a.classList.remove("has-validation")), e.querySelectorAll(".is-invalid").forEach((a) => a.classList.remove("is-invalid")), e.querySelectorAll(".invalid-feedback").forEach((a) => a.remove()), Object.entries(n).forEach(([a, d]) => {
-      const t = d[0];
-      let o = `[name="${a}"], [name="${a}[]"]`;
-      if (a.includes(".")) {
-        const l = a.replace(/\./g, "][");
-        o += `, [name="${l}"]`;
+  handleFormErrors(e, a) {
+    e.querySelectorAll(".has-validation").forEach((i) => i.classList.remove("has-validation")), e.querySelectorAll(".is-invalid").forEach((i) => i.classList.remove("is-invalid")), e.querySelectorAll(".invalid-feedback").forEach((i) => i.remove()), Object.entries(a).forEach(([i, o]) => {
+      const t = o[0];
+      let r = `[name="${i}"], [name="${i}[]"]`;
+      if (i.includes(".")) {
+        const l = i.replace(/\./g, "][");
+        r += `, [name="${l}"]`;
       }
-      const s = e.querySelectorAll(o);
+      const s = e.querySelectorAll(r);
       if (s.length > 0) {
         let l = !1;
-        if (s.forEach((i) => {
-          if (i.type === "hidden" || i.offsetParent === null)
-            r.showToast(t, "danger"), l = !0;
+        if (s.forEach((n) => {
+          if (n.type === "hidden" || n.offsetParent === null)
+            c.showToast(t, "danger"), l = !0;
           else {
-            i.classList.add("is-invalid");
-            const u = i.closest(".input-group");
+            n.classList.add("is-invalid");
+            const u = n.closest(".input-group");
             u && u.classList.add("has-validation");
           }
         }), !l) {
-          const i = s[0];
-          i.type === "checkbox" || i.type === "radio" ? s[s.length - 1].insertAdjacentHTML("afterend", `<div class="invalid-feedback">${t}</div>`) : i.insertAdjacentHTML("afterend", `<div class="invalid-feedback">${t}</div>`);
+          const n = s[0];
+          n.type === "checkbox" || n.type === "radio" ? s[s.length - 1].insertAdjacentHTML("afterend", `<div class="invalid-feedback">${t}</div>`) : n.insertAdjacentHTML("afterend", `<div class="invalid-feedback">${t}</div>`);
         }
       } else
-        r.showToast(t, "danger");
+        c.showToast(t, "danger");
     });
   },
-  showToast(e, n = "danger") {
-    typeof r.config.toastHandler == "function" ? r.config.toastHandler({ type: n, message: e }) : typeof window.$ < "u" && typeof window.$.fn.showToast == "function" ? window.$.fn.showToast({ type: n, title: e }) : console.warn(`[${n.toUpperCase()}] ${e}`);
+  showToast(e, a = "danger") {
+    typeof c.config.toastHandler == "function" ? c.config.toastHandler({ type: a, message: e }) : typeof window.$ < "u" && typeof window.$.fn.showToast == "function" ? window.$.fn.showToast({ type: a, title: e }) : console.warn(`[${a.toUpperCase()}] ${e}`);
+  },
+  enableSubmitButtons(e) {
+    if (c.config.disableSubmitDuringRequest !== !1) {
+      const i = e.getAttribute("data-form") || "", o = new CustomEvent("form:submit-enabled", { detail: { formId: i }, cancelable: !0 });
+      !e.dispatchEvent(o) || e.querySelectorAll('button[type="submit"]').forEach((s) => {
+        s.disabled = !1, s.classList.remove("disabled");
+      });
+    }
+  },
+  disableSubmitButtons(e) {
+    if (c.config.disableSubmitDuringRequest !== !1) {
+      const i = e.getAttribute("data-form") || "", o = new CustomEvent("form:submit-disabled", { detail: { formId: i }, cancelable: !0 });
+      !e.dispatchEvent(o) || e.querySelectorAll('button[type="submit"]').forEach((s) => {
+        s.disabled = !0, s.classList.add("disabled");
+      });
+    }
   }
 };
-window.OminityForms = r;
+window.OminityForms = c;
 export {
-  r as OminityForms
+  c as OminityForms
 };
