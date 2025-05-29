@@ -1,10 +1,13 @@
-<form action="{{ route('ominity.form.submit') }}" method="POST" {{ $attributes->merge([
-    'id' => 'form-' . $form->id,
-    'class' => 'ominity-form ' . ($class ?? ''),
-    'data-form' => $form->id,
-    'data-role' => isset($ajax) && $ajax ? 'ajax' : null,
-    'data-recaptcha' => config('ominity.forms.recaptcha.enabled') ? config('ominity.forms.recaptcha.version') : null,
-]) }} novalidate>
+<form
+    action="{{ route('ominity.form.submit') }}"
+    method="POST"
+    id="form-{{ $form->id }}"
+    class="ominity-form {{ $class ?? '' }}"
+    data-form="{{ $form->id }}"
+    @if(isset($ajax) && $ajax) data-role="ajax" @endif
+    @if(config('ominity.forms.recaptcha.enabled')) data-recaptcha="{{ config('ominity.forms.recaptcha.version') }}" @endif
+    novalidate
+>
     <input type="hidden" name="_token" value="">
     <input type="hidden" name="_form" value="{{ $form->id }}">
     <input type="hidden" name="_locale" value="{{ app()->getLocale() }}">
