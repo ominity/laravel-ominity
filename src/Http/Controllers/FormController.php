@@ -51,7 +51,7 @@ class FormController extends Controller
         $data = $request->except('_token', '_form', '_locale', 'g-recaptcha-response');
 
         foreach ($form->fields() as $field) {
-            if ($field->type === FieldType::METADATA) {
+            if ($field->type == FieldType::METADATA) {
                 $fieldKey = $field->name;
                 if (! isset($data[$fieldKey])) {
                     $data[$fieldKey] = [];

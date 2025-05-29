@@ -1,11 +1,13 @@
 interface OminityFormsConfig {
     toastHandler?: (options: { type: string; message: string }) => void;
+    disableSubmitDuringRequest?: boolean;
 }
 
 interface AjaxResponse {
     success: boolean;
     data?: any;
     errors?: Record<string, string[]>;
+    message?: string;
 }
 
 const OminityForms = {
@@ -18,7 +20,21 @@ const OminityForms = {
             const siteKey = document.querySelector('meta[name="recaptcha-site-key"]')?.getAttribute('content');
 
             form.addEventListener('submit', (e) => {
-                form.dispatchEvent(new CustomEvent('form:submit', { detail: { formId, recaptchaVersion } }));
+                const event = new CustomEvent('form:submit', { detail: { formId, recaptchaVersion }, cancelable: true });
+                const wasPrevented = !form.dispatchEvent(event);
+                if (wasPrevented) {
+                    e.preventDefault();
+                    return;
+                }
+                
+                const disableSubmit = OminityForms.config.disableSubmitDuringRequest !== false;
+                if (disableSubmit) {
+                    const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.classList.add('disabled');
+                    }
+                }
 
                 if (recaptchaVersion === 'v3') {
                     if (typeof grecaptcha === 'undefined') {
@@ -82,19 +98,34 @@ const OminityForms = {
                 }
             }
 
+            // Clear validation states
+            form.querySelectorAll('.has-validation').forEach(el => el.classList.remove('has-validation'));
+            form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+            // Clear success messages
+            form.querySelectorAll('.alert.alert-success').forEach(el => el.remove());
+
             form.dispatchEvent(new CustomEvent('form:submitted', { detail: { formId, data } }));
 
             if (data.success) {
-                // Clear validation states
-                form.querySelectorAll('.has-validation').forEach(el => el.classList.remove('has-validation'));
-                form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-                form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
-                
                 form.reset();
-                form.dispatchEvent(new CustomEvent('form:success', { detail: { formId, data } }));
+
+                const event = new CustomEvent('form:success', { detail: { formId, data }, cancelable: true });
+                const wasPrevented = !form.dispatchEvent(event);
+
+                if (!wasPrevented) {
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success';
+                    alert.textContent = data?.message || 'Your form was successfully submitted.';
+                    form.prepend(alert);
+                }
             } else if (data.errors) {
-                OminityForms.handleFormErrors(form, data.errors);
-                form.dispatchEvent(new CustomEvent('form:error', { detail: { formId, data } }));
+                const event = new CustomEvent('form:errors', { detail: { formId, data }, cancelable: true });
+                const wasPrevented = !form.dispatchEvent(event);
+
+                if (!wasPrevented) {
+                    OminityForms.handleFormErrors(form, data.errors);
+                }
             } else {
                 form.dispatchEvent(new CustomEvent('form:unknown', { detail: { formId, data } }));
             }
