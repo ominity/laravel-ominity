@@ -50,7 +50,11 @@ class Form extends Component
 
         $class = $this->class;
 
-        return view('ominity::components.form', compact('form', 'class'))->render();
+        return view('ominity::components.form', [
+            'form' => $form,
+            'class' => $class,
+            'ajax' => $this->ajax
+        ])->render();
     }
 
     /**

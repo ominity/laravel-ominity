@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "lib": ["ES2017", "DOM"],
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "strict": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "outDir": "./dist"
+    },
+    "include": ["resources/ts/**/*", "types.d.ts"]
+}

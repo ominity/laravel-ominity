@@ -1,0 +1,31 @@
+{
+  "name": "laravel-ominity",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\">Ominity for Laravel</h1>",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ominity/laravel-ominity.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ominity/laravel-ominity/issues"
+  },
+  "homepage": "https://github.com/ominity/laravel-ominity#readme",
+  "dependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.32"
+  }
+}

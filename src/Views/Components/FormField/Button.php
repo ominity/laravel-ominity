@@ -48,6 +48,8 @@ class Button extends Component
             $style = 'width: auto;';
         }
 
-        return view('ominity::components.form-field.button', compact('field', 'id', 'style'));
+        $recaptchaConfig = config('ominity.forms.recaptcha');
+
+        return view('ominity::components.form-field.button', compact('field', 'id', 'style', 'recaptchaConfig'));
     }
 }

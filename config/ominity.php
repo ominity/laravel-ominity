@@ -64,6 +64,13 @@ return [
             'store' => env('OMINITY_FORMS_CACHE_STORE', 'file'), // Cache store location
             'pre_render' => env('OMINITY_FORMS_CACHE_PRERENDER', true), // Enable pre-rendering of menus
         ],
+        'recaptcha' => [
+            'enabled' => env('OMINITY_FORMS_RECAPTCHA_ENABLED', false),
+            'site_key' => env('OMINITY_FORMS_RECAPTCHA_SITE_KEY', ''),
+            'secret_key' => env('OMINITY_FORMS_RECAPTCHA_SECRET_KEY', ''),
+            'version' => env('OMINITY_FORMS_RECAPTCHA_VERSION', 'v2'),
+            'score' => env('OMINITY_FORMS_RECAPTCHA_SCORE', 0.5) // Minimum score for reCAPTCHA v3
+        ],
     ],
 
     'routes' => [

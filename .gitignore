@@ -7,3 +7,4 @@ phpunit.xml
 .phpunit.cache
 .DS_Store
 .php-cs-fixer.cache
+node_modules
