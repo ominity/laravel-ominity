@@ -37,14 +37,15 @@ const OminityForms = {
                     if (recaptchaInput.value === '') {
                         e.preventDefault();
 
-                        grecaptcha.execute(siteKey!, { action: 'submit' }).then((token: string) => {
-                            recaptchaInput!.value = token;
-                            OminityForms.submitForm(form, formId);
+                        grecaptcha.ready(() => {
+                            grecaptcha.execute(siteKey!, { action: 'submit' }).then((token: string) => {
+                                recaptchaInput!.value = token;
+                                OminityForms.submitForm(form, formId);
+                            });
                         });
                     }
                 }
-
-                if (form.getAttribute('data-role') === 'ajax') {
+                else if (form.getAttribute('data-role') === 'ajax') {
                     e.preventDefault();
                     OminityForms.submitForm(form, formId);
                 }
@@ -84,6 +85,11 @@ const OminityForms = {
             form.dispatchEvent(new CustomEvent('form:submitted', { detail: { formId, data } }));
 
             if (data.success) {
+                // Clear validation states
+                form.querySelectorAll('.has-validation').forEach(el => el.classList.remove('has-validation'));
+                form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+                
                 form.reset();
                 form.dispatchEvent(new CustomEvent('form:success', { detail: { formId, data } }));
             } else if (data.errors) {

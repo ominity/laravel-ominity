@@ -52,7 +52,10 @@
     },
     "scripts": {
       "test": "./vendor/bin/phpunit tests",
-      "format": "./vendor/bin/pint"
+      "format": "./vendor/bin/pint",
+      "post-update-cmd": [
+        "@php artisan vendor:publish --tag=ominity-assets --force"
+      ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true
