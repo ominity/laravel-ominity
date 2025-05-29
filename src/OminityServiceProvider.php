@@ -22,7 +22,7 @@ use Ominity\Laravel\Services\VatValidationService;
 
 class OminityServiceProvider extends ServiceProvider
 {
-    const PACKAGE_VERSION = '1.1.3';
+    const PACKAGE_VERSION = '1.1.4';
 
     /**
      * Boot the service provider.
@@ -42,7 +42,7 @@ class OminityServiceProvider extends ServiceProvider
             ]);
 
             $this->publishes([
-                __DIR__.'/../../dist' => public_path('vendor/ominity'),
+                __DIR__.'/../dist' => public_path('vendor/ominity'),
             ], 'ominity-assets');
 
             AboutCommand::add('Ominity Laravel', fn () => ['Version' => self::PACKAGE_VERSION]);

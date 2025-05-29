@@ -73,6 +73,7 @@ const o = {
     typeof o.config.toastHandler == "function" ? o.config.toastHandler({ type: n, message: e }) : typeof window.$ < "u" && typeof window.$.fn.showToast == "function" ? window.$.fn.showToast({ type: n, title: e }) : console.warn(`[${n.toUpperCase()}] ${e}`);
   }
 };
+window.OminityForms = o;
 export {
   o as OminityForms
 };
