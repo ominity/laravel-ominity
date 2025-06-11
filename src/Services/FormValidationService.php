@@ -61,6 +61,10 @@ class FormValidationService
                 $fieldRules[] = 'numeric';
             }
 
+            if ($field->type == FieldType::MULTICHECKBOX) {
+                $fieldRules[] = 'array';
+            }
+
             if (isset($field->validation->minLength)) {
                 $fieldRules[] = 'min:'.$field->validation->minLength;
             }

@@ -4,7 +4,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: $form-row-gap;
-    margin-bottom: $form-row-margin-bottom;
 
     @media (max-width: $form-row-breakpoint) {
         flex-direction: column;

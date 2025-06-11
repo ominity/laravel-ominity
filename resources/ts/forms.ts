@@ -1,6 +1,14 @@
 interface OminityFormsConfig {
     toastHandler?: (options: { type: string; message: string }) => void;
     disableSubmitDuringRequest?: boolean;
+    enableTracking?: boolean;
+    gtagEvents?: {
+        successEvent?: string;
+        errorEvent?: string;
+        unknownEvent?: string;
+        submitEvent?: string;
+        defaultParams?: Record<string, any>;
+    }
 }
 
 interface AjaxResponse {
@@ -65,6 +73,8 @@ const OminityForms = {
     },
 
     submitForm(form: HTMLFormElement, formId: string): void {
+        this.fireFormGtag(form, 'submit');
+        
         if (form.getAttribute('data-role') === 'ajax') {
             this.handleFormAjaxSubmit(form, formId);
         } else {
@@ -113,12 +123,14 @@ const OminityForms = {
                 const wasPrevented = !form.dispatchEvent(event);
 
                 if (!wasPrevented) {
+                    this.fireFormGtag(form, 'success');
                     const alert = document.createElement('div');
                     alert.className = 'alert alert-success';
                     alert.textContent = data?.message || 'Your form was successfully submitted.';
                     form.prepend(alert);
                 }
             } else if (data.errors) {
+                this.fireFormGtag(form, 'error');
                 const event = new CustomEvent('form:errors', { detail: { formId, data }, cancelable: true });
                 const wasPrevented = !form.dispatchEvent(event);
 
@@ -126,6 +138,7 @@ const OminityForms = {
                     OminityForms.handleFormErrors(form, data.errors);
                 }
             } else {
+                this.fireFormGtag(form, 'unknown');
                 form.dispatchEvent(new CustomEvent('form:unknown', { detail: { formId, data } }));
             }
         })
@@ -228,6 +241,36 @@ const OminityForms = {
             }
         }
     },
+
+    fireFormGtag(form: HTMLFormElement, type: 'success' | 'error' | 'unknown' | 'submit', extraParams?: Record<string, any>) {
+        if (this.config.enableTracking === false) {
+            return;
+        }
+
+        const formId = form.getAttribute('data-form') || '';
+
+        const typeMap: Record<string, string> = {
+            success: this.config.gtagEvents?.successEvent || 'form_submission',
+            error: this.config.gtagEvents?.errorEvent || 'form_submission_error',
+            unknown: this.config.gtagEvents?.unknownEvent || 'form_submission_unknown',
+            submit: this.config.gtagEvents?.submitEvent || 'form_submission_attempt'
+        };
+
+        const attrOverride = form.getAttribute(`data-gtag-${type}-event`)?.trim() || undefined;
+        const eventName = attrOverride || typeMap[type];
+
+        if (!eventName) return;
+
+        const eventParams = {
+            form_id: formId,
+            ...(this.config.gtagEvents?.defaultParams || {}),
+            ...(extraParams || {})
+        };
+
+        if (typeof window.gtag === 'function') {
+            window.gtag('event', eventName, eventParams);
+        }
+    }
 };
 
 export default OminityForms;
