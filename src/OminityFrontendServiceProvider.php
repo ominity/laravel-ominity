@@ -9,7 +9,7 @@ class OminityFrontendServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        Blade::directive('ominity-recaptcha', function () {
+        Blade::directive('ominity_recaptcha', function () {
             if (! config('ominity.forms.recaptcha.enabled')) {
                 return '';
             }
@@ -31,7 +31,7 @@ HTML;
 HTML;
         });
 
-        Blade::directive('ominity-style', function () {
+        Blade::directive('ominity_style', function () {
             $packageVersion = OminityServiceProvider::PACKAGE_VERSION;
             $css = asset('vendor/ominity/ominity.css')."?v={$packageVersion}";
 
@@ -40,7 +40,7 @@ HTML;
 HTML;
         });
 
-        Blade::directive('ominity-scripts', function () {
+        Blade::directive('ominity_scripts', function () {
             $packageVersion = OminityServiceProvider::PACKAGE_VERSION;
             $script = asset('vendor/ominity/ominity.js')."?v={$packageVersion}";
 
