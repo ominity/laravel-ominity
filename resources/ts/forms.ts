@@ -262,7 +262,10 @@ const OminityForms = {
         if (!eventName) return;
 
         const eventParams = {
+            event_category: 'Form',
+            event_label: 'Form #' + formId,
             form_id: formId,
+            form_event_type: type,
             ...(this.config.gtagEvents?.defaultParams || {}),
             ...(extraParams || {})
         };
