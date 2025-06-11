@@ -6,6 +6,9 @@
     </label>
     <div class="input-group">
         <select name="{{ $field->name }}" class="form-control" id="{{ $id }}" @if ($field->placeholder) placeholder="{{ $field->placeholder }}" @endif @if ($field->validation->isRequired) required="" @endif>
+            @if ($field->placeholder)
+                <option value="" disabled selected hidden>{{ $field->placeholder }}</option>
+            @endif
             @foreach ($field->options as $option)
                 <option value="{{ $option->value }}" @selected($option->isDefault)>{{ $option->label }}</option>
             @endforeach
