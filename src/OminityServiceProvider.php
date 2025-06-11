@@ -43,7 +43,7 @@ class OminityServiceProvider extends ServiceProvider
 
             $this->publishes([
                 __DIR__.'/../dist' => public_path('vendor/ominity'),
-            ], 'ominity-assets');
+            ], ['ominity-assets', 'laravel-assets']);
 
             AboutCommand::add('Ominity Laravel', fn () => ['Version' => self::PACKAGE_VERSION]);
 
