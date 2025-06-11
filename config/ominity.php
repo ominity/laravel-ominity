@@ -71,6 +71,12 @@ return [
             'version' => env('OMINITY_FORMS_RECAPTCHA_VERSION', 'v2'),
             'score' => env('OMINITY_FORMS_RECAPTCHA_SCORE', 0.5), // Minimum score for reCAPTCHA v3
         ],
+        'fields' => [
+            'phone' => [
+                'country_enabled' => env('OMINITY_FORMS_PHONE_COUNTRY_ENABLED', false), // Enable custom country list
+                'default_country' => env('OMINITY_FORMS_PHONE_DEFAULT_COUNTRY', null), // Default country for phone fields
+            ]
+        ]
     ],
 
     'routes' => [

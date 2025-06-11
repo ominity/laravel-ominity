@@ -5,7 +5,7 @@ namespace Ominity\Laravel\Views\Components\FormField;
 use Illuminate\Support\Str;
 use Illuminate\View\Component;
 
-class Text extends Component
+class Multicheckbox extends Component
 {
     public $field;
 
@@ -29,10 +29,15 @@ class Text extends Component
     {
         $field = $this->field;
 
+        $id = Str::random(10);
+        if (isset($field->css->id)) {
+            $id = $field->css->id;
+        }
+
         $id = $field->css->id ?? Str::random(10);
 
         $style = $field->width ? "width: {$field->width};" : '';
 
-        return view('ominity::components.form-field.text', compact('field', 'id', 'style'));
+        return view('ominity::components.form-field.multicheckbox', compact('field', 'id', 'style'));
     }
 }

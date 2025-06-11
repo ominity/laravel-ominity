@@ -5,7 +5,7 @@ namespace Ominity\Laravel\Views\Components\FormField;
 use Illuminate\Support\Str;
 use Illuminate\View\Component;
 
-class Text extends Component
+class Checkbox extends Component
 {
     public $field;
 
@@ -33,6 +33,6 @@ class Text extends Component
 
         $style = $field->width ? "width: {$field->width};" : '';
 
-        return view('ominity::components.form-field.text', compact('field', 'id', 'style'));
+        return view('ominity::components.form-field.checkbox', compact('field', 'id', 'style'));
     }
 }

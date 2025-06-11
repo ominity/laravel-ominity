@@ -16,8 +16,12 @@
         {{ $above }}
     @endif
 
-    @foreach ($form->fields() as $field)
-        <x-ominity::form-field :field="$field" />
+    @foreach ($fieldRows as $row)
+        <div class="form-row">
+            @foreach ($row as $field)
+                <x-ominity::form-field :field="$field" />
+            @endforeach
+        </div>
     @endforeach
 
     @if (isset($below))

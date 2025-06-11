@@ -4,26 +4,43 @@ namespace Ominity\Laravel\Views\Components;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\Component;
+use Ominity\Api\Resources\Modules\Forms\Form as OminityForm;
 use Ominity\Laravel\Facades\Ominity;
 
 class Form extends Component
 {
-    public int $formId;
+    public OminityForm $form;
 
-    public string $class;
-
-    public bool $ajax;
+    public array $rows = [];
 
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct(int $form, string $class = '', bool $ajax = false)
-    {
-        $this->formId = $form;
-        $this->class = $class;
-        $this->ajax = $ajax;
+    public function __construct(
+        int|OminityForm $form,
+        public string $class = '',
+        public bool $ajax = false
+    ) {
+        if ($form instanceof OminityForm) {
+            $this->form = $form;
+        } else {
+            $config = config('ominity.forms.cache');
+            if ($config['enabled']) {
+                $this->form = Cache::store($config['store'])->remember('forms-data-'.$form.'-'.app()->getLocale(), $config['expiration'], function () use ($form) {
+                    return Ominity::api()->modules->forms->forms->get($form, [
+                        'include' => 'fields',
+                    ]);
+                });
+            } else {
+                $this->form = Ominity::api()->modules->forms->forms->get($form, [
+                    'include' => 'fields',
+                ]);
+            }
+        }
+
+        $this->rows = $this->buildFieldRows();
     }
 
     /**
@@ -33,41 +50,35 @@ class Form extends Component
      */
     public function render()
     {
-        $config = config('ominity.forms.cache');
-        $cacheKey = 'forms-data-'.$this->formId.'-'.app()->getLocale();
-
-        if ($config['enabled']) {
-            $form = Cache::store($config['store'])->remember(
-                $cacheKey,
-                $config['expiration'],
-                function () {
-                    return $this->fetchFormData();
-                }
-            );
-        } else {
-            $form = $this->fetchFormData();
-        }
-
-        $class = $this->class;
-
         return view('ominity::components.form', [
-            'form' => $form,
-            'class' => $class,
+            'form' => $this->form,
+            'rows' => $this->rows,
+            'class' => $this->class,
             'ajax' => $this->ajax,
         ])->render();
     }
 
-    /**
-     * Fetch form data from the API.
-     *
-     * @return array
-     */
-    protected function fetchFormData()
+    protected function buildFieldRows(): array
     {
-        $form = Ominity::api()->modules->forms->forms->get($this->formId, [
-            'include' => 'fields',
-        ]);
+        $rows = [];
+        $currentRow = [];
 
-        return $form;
+        foreach ($this->form->fields() as $field) {
+            if (!$field->isInline) {
+                if (!empty($currentRow)) {
+                    $rows[] = $currentRow;
+                    $currentRow = [];
+                }
+                $rows[] = [$field];
+            } else {
+                $currentRow[] = $field;
+            }
+        }
+
+        if (!empty($currentRow)) {
+            $rows[] = $currentRow;
+        }
+
+        return $rows;
     }
 }

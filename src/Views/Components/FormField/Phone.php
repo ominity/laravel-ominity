@@ -34,19 +34,9 @@ class Phone extends Component
             $id = $field->css->id;
         }
 
-        $style = '';
-        if ($field->isInline) {
-            $style = 'display: inline-block; ';
-            if ($field->width) {
-                $style .= 'width: calc('.$field->width.' - 3px);';
-            } else {
-                $style .= 'width: calc(50% - 3px);';
-            }
-        } elseif ($field->width) {
-            $style = 'width: '.$field->width.';';
-        } else {
-            $style = 'width: 100%;';
-        }
+        $id = $field->css->id ?? Str::random(10);
+
+        $style = $field->width ? "width: {$field->width};" : '';
 
         return view('ominity::components.form-field.phone', compact('field', 'id', 'style'));
     }

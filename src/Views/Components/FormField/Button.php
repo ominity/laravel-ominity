@@ -29,24 +29,8 @@ class Button extends Component
     {
         $field = $this->field;
 
-        $id = Str::random(10);
-        if (isset($field->css->id)) {
-            $id = $field->css->id;
-        }
-
-        $style = '';
-        if ($field->isInline) {
-            $style = 'display: inline-block; ';
-            if ($field->width) {
-                $style .= 'width: calc('.$field->width.' - 3px);';
-            } else {
-                $style .= 'width: calc(50% - 3px);';
-            }
-        } elseif ($field->width) {
-            $style = 'width: '.$field->width.';';
-        } else {
-            $style = 'width: auto;';
-        }
+        $id = $field->css->id ?? Str::random(10);
+        $style = $field->width ? "width: {$field->width};" : '';
 
         $recaptchaConfig = config('ominity.forms.recaptcha');
 
