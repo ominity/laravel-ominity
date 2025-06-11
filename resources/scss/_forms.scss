@@ -9,6 +9,10 @@
     @media (max-width: $form-row-breakpoint) {
         flex-direction: column;
         gap: 0;
+
+        .form-group.form-inline {
+            width: auto !important;
+        }
     }
 
     > * {
