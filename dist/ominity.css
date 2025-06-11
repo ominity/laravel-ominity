@@ -1,0 +1,5 @@
+/*!
+ * Ominity (https://ominity.com/)
+ * Copyright 2023-2025 Ominity
+ * Licensed under MIT (https://github.com/ominity/laravel-ominity/blob/main/LICENSE)
+ */.form-row{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem}@media (max-width: 768px){.form-row{flex-direction:column}}.form-row>*{flex:1 1 0}.form-group{margin-bottom:1rem}

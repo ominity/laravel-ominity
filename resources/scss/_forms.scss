@@ -1,0 +1,20 @@
+@use "variables" as *;
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $form-row-gap;
+    margin-bottom: $form-row-margin-bottom;
+
+    @media (max-width: $form-row-breakpoint) {
+        flex-direction: column;
+    }
+
+    > * {
+        flex: 1 1 0;
+    }
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}

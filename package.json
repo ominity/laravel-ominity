@@ -27,6 +27,7 @@
     "vite": "^6.3.5"
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.32"
+    "@types/jquery": "^3.5.32",
+    "sass": "^1.89.2"
   }
 }
