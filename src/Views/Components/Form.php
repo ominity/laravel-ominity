@@ -40,6 +40,8 @@ class Form extends Component
             }
         }
 
+        $this->form->fields = $this->form->fields();
+
         $this->rows = $this->buildFieldRows();
     }
 
@@ -63,7 +65,11 @@ class Form extends Component
         $rows = [];
         $currentRow = [];
 
-        foreach ($this->form->fields() as $field) {
+        foreach ($this->form->fields as $field) {
+            if (in_array($field->type, ['hidden', 'metadata'])) {
+                continue;
+            }
+
             if (! $field->isInline) {
                 if (! empty($currentRow)) {
                     $rows[] = $currentRow;

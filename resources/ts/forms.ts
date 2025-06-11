@@ -13,52 +13,54 @@ interface AjaxResponse {
 const OminityForms = {
     config: {} as OminityFormsConfig,
 
-    init(): void {
-        document.querySelectorAll<HTMLFormElement>('form.ominity-form[data-form]').forEach(form => {
+     init(): void {
+        document.addEventListener('submit', (e: Event) => {
+            const form = e.target as HTMLFormElement;
+            if (!(form instanceof HTMLFormElement)) return;
+
+            // Only handle forms managed by Ominity
+            if (!form.matches('form.ominity-form[data-form]')) return;
+
             const formId = form.getAttribute('data-form') || '';
-            const recaptchaVersion = form.getAttribute('data-recaptcha'); // 'v2', 'v3', or null
+            const recaptchaVersion = form.getAttribute('data-recaptcha');
             const siteKey = document.querySelector('meta[name="recaptcha-site-key"]')?.getAttribute('content');
 
-            form.addEventListener('submit', (e) => {
-                const event = new CustomEvent('form:submit', { detail: { formId, recaptchaVersion }, cancelable: true });
-                const wasPrevented = !form.dispatchEvent(event);
-                if (wasPrevented) {
-                    e.preventDefault();
+            const event = new CustomEvent('form:submit', { detail: { formId, recaptchaVersion }, cancelable: true });
+            const wasPrevented = !form.dispatchEvent(event);
+            if (wasPrevented) {
+                e.preventDefault();
+                return;
+            }
+
+            this.disableSubmitButtons(form);
+
+            if (recaptchaVersion === 'v3') {
+                e.preventDefault();
+
+                if (typeof grecaptcha === 'undefined') {
+                    console.warn('reCAPTCHA v3 is not loaded.');
                     return;
                 }
 
-                OminityForms.disableSubmitButtons(form);
-
-                if (recaptchaVersion === 'v3') {
-                    if (typeof grecaptcha === 'undefined') {
-                        console.warn('reCAPTCHA v3 is not loaded.');
-                        return;
-                    }
-
-                    let recaptchaInput = form.querySelector<HTMLInputElement>('input[name="g-recaptcha-response"]');
-                    if (!recaptchaInput) {
-                        recaptchaInput = document.createElement('input');
-                        recaptchaInput.type = 'hidden';
-                        recaptchaInput.name = 'g-recaptcha-response';
-                        form.appendChild(recaptchaInput);
-                    }
-
-                    if (recaptchaInput.value === '') {
-                        e.preventDefault();
-
-                        grecaptcha.ready(() => {
-                            grecaptcha.execute(siteKey!, { action: 'submit' }).then((token: string) => {
-                                recaptchaInput!.value = token;
-                                OminityForms.submitForm(form, formId);
-                            });
-                        });
-                    }
+                let recaptchaInput = form.querySelector<HTMLInputElement>('input[name="g-recaptcha-response"]');
+                if (!recaptchaInput) {
+                    recaptchaInput = document.createElement('input');
+                    recaptchaInput.type = 'hidden';
+                    recaptchaInput.name = 'g-recaptcha-response';
+                    form.appendChild(recaptchaInput);
                 }
-                else if (form.getAttribute('data-role') === 'ajax') {
-                    e.preventDefault();
-                    OminityForms.submitForm(form, formId);
-                }
-            });
+
+                grecaptcha.ready(() => {
+                    grecaptcha.execute(siteKey!, { action: 'submit' }).then((token: string) => {
+                        recaptchaInput!.value = token;
+                        this.submitForm(form, formId);
+                    });
+                });
+            }
+            else if (form.getAttribute('data-role') === 'ajax') {
+                e.preventDefault();
+                this.submitForm(form, formId);
+            }
         });
     },
 

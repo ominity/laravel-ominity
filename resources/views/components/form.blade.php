@@ -16,7 +16,15 @@
         {{ $above }}
     @endif
 
-    @foreach ($fieldRows as $row)
+    {{-- Render hidden form input fields --}}
+    @foreach($form->fields as $field)
+        @if (in_array($field->type, ['hidden', 'metadata']))
+            <x-ominity::form-field :field="$field" />
+        @endif
+    @endforeach
+
+    {{-- Render form rows --}}
+    @foreach ($rows as $row)
         <div class="form-row">
             @foreach ($row as $field)
                 <x-ominity::form-field :field="$field" />
