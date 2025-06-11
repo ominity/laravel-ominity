@@ -75,8 +75,8 @@ return [
             'phone' => [
                 'country_enabled' => env('OMINITY_FORMS_PHONE_COUNTRY_ENABLED', false), // Enable custom country list
                 'default_country' => env('OMINITY_FORMS_PHONE_DEFAULT_COUNTRY', null), // Default country for phone fields
-            ]
-        ]
+            ],
+        ],
     ],
 
     'routes' => [

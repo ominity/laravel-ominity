@@ -64,8 +64,8 @@ class Form extends Component
         $currentRow = [];
 
         foreach ($this->form->fields() as $field) {
-            if (!$field->isInline) {
-                if (!empty($currentRow)) {
+            if (! $field->isInline) {
+                if (! empty($currentRow)) {
                     $rows[] = $currentRow;
                     $currentRow = [];
                 }
@@ -75,7 +75,7 @@ class Form extends Component
             }
         }
 
-        if (!empty($currentRow)) {
+        if (! empty($currentRow)) {
             $rows[] = $currentRow;
         }
 
