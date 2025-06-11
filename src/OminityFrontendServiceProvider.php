@@ -31,7 +31,7 @@ HTML;
 HTML;
         });
 
-        Blade::directive('ominity_style', function () {
+        Blade::directive('ominity_styles', function () {
             $packageVersion = OminityServiceProvider::PACKAGE_VERSION;
             $css = asset('vendor/ominity/ominity.css')."?v={$packageVersion}";
 
