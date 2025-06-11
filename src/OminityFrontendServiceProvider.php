@@ -31,9 +31,18 @@ HTML;
 HTML;
         });
 
+        Blade::directive('ominityStyle', function () {
+            $packageVersion = OminityServiceProvider::PACKAGE_VERSION;
+            $css = asset('vendor/ominity/ominity.css')."?v={$packageVersion}";
+
+            return <<<HTML
+<link rel="stylesheet" href="{$css}">
+HTML;
+        });
+
         Blade::directive('ominityScripts', function () {
             $packageVersion = OminityServiceProvider::PACKAGE_VERSION;
-            $script = asset('vendor/ominity/ominity.umd.js')."?v={$packageVersion}";
+            $script = asset('vendor/ominity/ominity.js')."?v={$packageVersion}";
 
             return <<<HTML
 <script src="{$script}"></script>
