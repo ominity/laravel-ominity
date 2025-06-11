@@ -18,7 +18,7 @@
 
     {{-- Render hidden form input fields --}}
     @foreach($form->fields as $field)
-        @if (in_array($field->type, ['hidden', 'metadata']))
+        @if (in_array($field->type, ['hidden', 'metadata', 'honeypot']))
             <x-ominity::form-field :field="$field" />
         @endif
     @endforeach

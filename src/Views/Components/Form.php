@@ -66,7 +66,7 @@ class Form extends Component
         $currentRow = [];
 
         foreach ($this->form->fields as $field) {
-            if (in_array($field->type, ['hidden', 'metadata'])) {
+            if (in_array($field->type, ['hidden', 'metadata', 'honeypot'])) {
                 continue;
             }
 
