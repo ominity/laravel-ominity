@@ -8,13 +8,10 @@
 
     @media (max-width: $form-row-breakpoint) {
         flex-direction: column;
+        gap: 0;
     }
 
     > * {
         flex: 1 1 0;
     }
-}
-
-.form-group {
-    margin-bottom: 1rem;
 }
