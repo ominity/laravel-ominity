@@ -36,7 +36,7 @@ class Phone extends Component
 
         $id = $field->css->id ?? Str::random(10);
 
-        $style = $field->width ? "width: {$field->width};" : '';
+        $style = $field->width ? "min-width: {$field->width};" : '';
 
         return view('ominity::components.form-field.phone', compact('field', 'id', 'style'));
     }
