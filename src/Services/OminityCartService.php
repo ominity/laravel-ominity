@@ -198,6 +198,7 @@ class OminityCartService
      *
      * @param  string  $promotionCode
      * @return Cart|null
+     *
      * @throws \Ominity\Laravel\Exceptions\InvalidPromotionCodeException
      */
     public function applyPromotionCode($promotionCode)
@@ -210,8 +211,8 @@ class OminityCartService
 
         $this->cart = $this->cart->update();
 
-        if(! in_array($promotionCode, $this->cart->promotionCodes ?? [])) {
-            throw new \Ominity\Laravel\Exceptions\InvalidPromotionCodeException();
+        if (! in_array($promotionCode, $this->cart->promotionCodes ?? [])) {
+            throw new \Ominity\Laravel\Exceptions\InvalidPromotionCodeException;
         }
 
         return $this->cart;
