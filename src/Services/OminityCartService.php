@@ -194,42 +194,47 @@ class OminityCartService
     }
 
     /**
-     * Apply a coupon to the cart
+     * Apply a promotion code to the cart
      *
-     * @param  string  $coupon
+     * @param  string  $promotionCode
      * @return Cart|null
+     * @throws \Ominity\Laravel\Exceptions\InvalidPromotionCodeException
      */
-    public function applyCoupon($coupon)
+    public function applyPromotionCode($promotionCode)
     {
         if (! $this->cart) {
             return null;
         }
 
-        $this->cart->coupons = array_merge($this->cart->coupons ?? [], [$coupon]);
+        $this->cart->promotionCodes = array_merge($this->cart->promotionCodes ?? [], [$promotionCode]);
 
         $this->cart = $this->cart->update();
+
+        if(! in_array($promotionCode, $this->cart->promotionCodes ?? [])) {
+            throw new \Ominity\Laravel\Exceptions\InvalidPromotionCodeException();
+        }
 
         return $this->cart;
     }
 
     /**
-     * Remove a coupon from the cart
+     * Remove a promotion code from the cart
      *
-     * @param  string|null  $coupon
+     * @param  string|null  $promotionCode
      * @return Cart|null
      */
-    public function removeCoupon($coupon = null)
+    public function removePromotionCode($promotionCode = null)
     {
         if (! $this->cart) {
             return null;
         }
 
-        if ($coupon) {
-            $this->cart->coupons = array_filter($this->cart->coupons ?? [], function ($c) use ($coupon) {
-                return $c != $coupon;
+        if ($promotionCode) {
+            $this->cart->promotionCodes = array_filter($this->cart->promotionCodes ?? [], function ($c) use ($promotionCode) {
+                return $c != $promotionCode;
             });
         } else {
-            $this->cart->coupons = [];
+            $this->cart->promotionCodes = [];
         }
 
         $this->cart = $this->cart->update();
