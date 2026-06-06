@@ -202,8 +202,9 @@ class OminityTrackingService
 
         return <<<HTML
 <script>
-window.__ominityTrackingConfig = {$json};
-if (window.OminityTracking && typeof window.OminityTracking.start === 'function') {
+window.__ominityTrackingConfig = window.__ominityTrackingConfig || {$json};
+if (! window.__ominityTrackingStarted && window.OminityTracking && typeof window.OminityTracking.start === 'function') {
+    window.__ominityTrackingStarted = true;
     window.OminityTracking.start(window.__ominityTrackingConfig);
 }
 </script>
@@ -255,11 +256,21 @@ HTML;
         if (is_string($candidate)) {
             $candidate = trim($candidate);
             if (Str::isUuid($candidate)) {
+                $this->storeVisitorIdInSession($candidate, $request);
+
                 return $this->visitorId = $candidate;
             }
         }
 
-        return $this->visitorId = (string) Str::uuid();
+        $candidate = $this->getVisitorIdFromSession($request);
+        if ($candidate !== null) {
+            return $this->visitorId = $candidate;
+        }
+
+        $candidate = (string) Str::uuid();
+        $this->storeVisitorIdInSession($candidate, $request);
+
+        return $this->visitorId = $candidate;
     }
 
     public function queueVisitorCookie(?string $visitorId = null, ?Request $request = null): void
@@ -268,6 +279,8 @@ HTML;
         if (! Str::isUuid($visitorId)) {
             return;
         }
+
+        $this->storeVisitorIdInSession($visitorId, $request);
 
         $cookieConfig = is_array($this->config['cookie'] ?? null)
             ? $this->config['cookie']
@@ -408,6 +421,48 @@ HTML;
         $value = (float) $value;
 
         return max(0.0, min(1.0, $value));
+    }
+
+    protected function isSessionFallbackEnabled(): bool
+    {
+        return ($this->config['session']['enabled'] ?? true) !== false;
+    }
+
+    protected function sessionVisitorKey(): string
+    {
+        $key = $this->normalizeString($this->config['session']['key'] ?? null);
+
+        return $key ?: '_ominity_visitor_id';
+    }
+
+    protected function getVisitorIdFromSession(?Request $request = null): ?string
+    {
+        if (! $this->isSessionFallbackEnabled()) {
+            return null;
+        }
+
+        $request ??= $this->currentRequest();
+        if (! $request?->hasSession()) {
+            return null;
+        }
+
+        $candidate = $this->normalizeString($request->session()->get($this->sessionVisitorKey()));
+
+        return $candidate !== null && Str::isUuid($candidate) ? $candidate : null;
+    }
+
+    protected function storeVisitorIdInSession(?string $visitorId, ?Request $request = null): void
+    {
+        if (! $this->isSessionFallbackEnabled() || ! is_string($visitorId) || ! Str::isUuid($visitorId)) {
+            return;
+        }
+
+        $request ??= $this->currentRequest();
+        if (! $request?->hasSession()) {
+            return;
+        }
+
+        $request->session()->put($this->sessionVisitorKey(), $visitorId);
     }
 
     protected function normalizeVisitorId(mixed $value): ?string

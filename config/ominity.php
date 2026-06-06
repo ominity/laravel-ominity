@@ -108,6 +108,10 @@ return [
             'same_site' => env('OMINITY_TRACKING_COOKIE_SAME_SITE', 'lax'),
             'secure' => env('OMINITY_TRACKING_COOKIE_SECURE'),
         ],
+        'session' => [
+            'enabled' => env('OMINITY_TRACKING_SESSION_FALLBACK', true),
+            'key' => env('OMINITY_TRACKING_SESSION_KEY_NAME', '_ominity_visitor_id'),
+        ],
         'frontend' => [
             'sample_rate' => env('OMINITY_TRACKING_SAMPLE_RATE', 1),
             'track_page_views' => env('OMINITY_TRACKING_PAGE_VIEWS', true),
