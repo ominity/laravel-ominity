@@ -95,6 +95,31 @@ const DEFAULT_VISITOR_COOKIE_NAME = '_omtvid';
 const DEFAULT_VISITOR_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 const DOWNLOAD_FILE_PATTERN = /\.(csv|doc|docx|ics|jpg|jpeg|json|mp3|mp4|pdf|png|ppt|pptx|svg|txt|webp|xls|xlsx|zip)(\?.*)?$/i;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const TRACKING_QUERY_PARAM_KEYS = new Set([
+    '_ga',
+    '_gac',
+    '_gcl_au',
+    '_gl',
+    '_gs',
+    '_up',
+    'dclid',
+    'fbclid',
+    'gad_source',
+    'gbraid',
+    'gclid',
+    'igshid',
+    'li_fat_id',
+    'mc_cid',
+    'mc_eid',
+    'msclkid',
+    'srsltid',
+    'ttclid',
+    'twclid',
+    'vero_conv',
+    'vero_id',
+    'wbraid',
+]);
+const TRACKING_QUERY_PARAM_PREFIXES = ['utm_', '_ga_', '_gac_', '_gcl_'];
 
 const state = {
     started: false,
@@ -244,12 +269,42 @@ function clearVisitorCookie(): void {
     document.cookie = `${options.name}=; Path=${options.path}; Max-Age=0; SameSite=${options.sameSite.charAt(0).toUpperCase()}${options.sameSite.slice(1)}${options.secure ? '; Secure' : ''}`;
 }
 
+function shouldStripTrackingQueryParam(key: string): boolean {
+    const normalized = key.trim().toLowerCase();
+    if (normalized === '') {
+        return false;
+    }
+
+    if (TRACKING_QUERY_PARAM_KEYS.has(normalized)) {
+        return true;
+    }
+
+    return TRACKING_QUERY_PARAM_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+}
+
+function resolveNormalizedCurrentUrl(): URL {
+    const url = new URL(window.location.href);
+    const searchKeys = Array.from(new Set(Array.from(url.searchParams.keys())));
+
+    for (const key of searchKeys) {
+        if (!shouldStripTrackingQueryParam(key)) {
+            continue;
+        }
+
+        url.searchParams.delete(key);
+    }
+
+    return url;
+}
+
 function resolveCurrentUrl(): string {
-    return window.location.href;
+    return resolveNormalizedCurrentUrl().toString();
 }
 
 function resolveCurrentPageKey(): string {
-    return `${window.location.pathname}${window.location.search}`;
+    const url = resolveNormalizedCurrentUrl();
+
+    return `${url.pathname}${url.search}`;
 }
 
 function buildUtmFromLocation(location: Location): TrackingEventUtm | undefined {
@@ -270,11 +325,12 @@ function buildUtmFromLocation(location: Location): TrackingEventUtm | undefined 
 function buildBaseMetadata(pageKey: string, previousUrl: string | null): TrackingEventMetadata {
     const locale = asNonEmptyString(document.documentElement.lang) ?? asNonEmptyString(navigator.language);
     const timezone = asNonEmptyString(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    const currentUrl = resolveNormalizedCurrentUrl();
 
     return {
         page_key: pageKey,
-        pathname: window.location.pathname,
-        search: window.location.search || undefined,
+        pathname: currentUrl.pathname,
+        search: currentUrl.search || undefined,
         hash: window.location.hash || undefined,
         previous_url: previousUrl ?? undefined,
         locale,
