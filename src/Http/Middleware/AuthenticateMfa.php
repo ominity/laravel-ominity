@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Ominity\Laravel\Exceptions\MfaAuthenticationException;
 use Ominity\Laravel\Exceptions\MfaAuthorizationException;
 use Ominity\Laravel\Exceptions\MfaNotEnabledException;
+use Ominity\Laravel\Models\User;
 
 class AuthenticateMfa
 {
@@ -22,7 +23,7 @@ class AuthenticateMfa
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return mixed
      *
      * @throws MfaNotEnabledException
@@ -34,7 +35,7 @@ class AuthenticateMfa
             return $next($request);
         }
 
-        /** @var \Ominity\Laravel\Models\User|null $user */
+        /** @var User|null $user */
         $user = Auth::user();
 
         if (! $user) {
@@ -55,10 +56,10 @@ class AuthenticateMfa
     /**
      * Handle an unauthenticated user.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return void
      *
-     * @throws \Ominity\Laravel\Exceptions\MfaAuthenticationException
+     * @throws MfaAuthenticationException
      */
     protected function unauthenticated($request)
     {
@@ -70,10 +71,10 @@ class AuthenticateMfa
     /**
      * Handle an unauthorized user.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return void
      *
-     * @throws \Ominity\Laravel\Exceptions\MfaAuthorizationException
+     * @throws MfaAuthorizationException
      */
     protected function unauthorized($request)
     {

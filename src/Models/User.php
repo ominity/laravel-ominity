@@ -5,6 +5,8 @@ namespace Ominity\Laravel\Models;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Support\Facades\Session;
+use Ominity\Api\Exceptions\ApiException;
+use Ominity\Api\Resources\Commerce\CustomerUser;
 use Ominity\Api\Resources\Users\User as OminityUser;
 
 class User extends OminityUser implements AuthenticatableContract
@@ -27,7 +29,7 @@ class User extends OminityUser implements AuthenticatableContract
     /**
      * Get the current customer from the session.
      *
-     * @return \Ominity\Api\Resources\Commerce\CustomerUser|null
+     * @return CustomerUser|null
      */
     public function getCurrentCustomer()
     {
@@ -42,7 +44,7 @@ class User extends OminityUser implements AuthenticatableContract
                 $this->currentCustomer = $this->client->users->customers->getFor($this, $customerId);
 
                 return $this->currentCustomer;
-            } catch (\Ominity\Api\Exceptions\ApiException $e) {
+            } catch (ApiException $e) {
             }
         }
 

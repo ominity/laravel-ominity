@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Ominity\Api\Resources\Modules\Forms\Form;
 use Ominity\Api\Types\Modules\Forms\FieldType;
 use Ominity\Laravel\Facades\Ominity;
+use Ominity\Laravel\Models\User;
 use Ominity\Laravel\Services\FormValidationService;
 
 class FormController extends Controller
@@ -79,7 +80,7 @@ class FormController extends Controller
         try {
             Ominity::api()->modules->forms->submissions->create([
                 'formId' => $form->id,
-                'userId' => (Auth::check() && Auth::user() instanceof \Ominity\Laravel\Models\User) ? Auth::id() : null,
+                'userId' => (Auth::check() && Auth::user() instanceof User) ? Auth::id() : null,
                 'data' => $data,
             ]);
 

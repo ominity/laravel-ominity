@@ -4,6 +4,7 @@ namespace Ominity\Laravel\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Translation\PotentiallyTranslatedString;
 use Ominity\Laravel\Services\VatValidationService;
 
 class VatNumberFormat implements ValidationRule
@@ -18,7 +19,7 @@ class VatNumberFormat implements ValidationRule
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  Closure(string): PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

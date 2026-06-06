@@ -2,6 +2,7 @@
 
 namespace Ominity\Laravel\Views\Components;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use Ominity\Api\Resources\Modules\Forms\FormField as OminityFormField;
 
@@ -23,7 +24,7 @@ class FormField extends Component
     /**
      * Get the view / contents that represent the component.
      *
-     * @return \Illuminate\Contracts\View\View|string
+     * @return View|string
      */
     public function render()
     {

@@ -2,6 +2,7 @@
 
 namespace Ominity\Laravel\Views\Components;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\Component;
 use Ominity\Api\Resources\Modules\Forms\Form as OminityForm;
@@ -48,7 +49,7 @@ class Form extends Component
     /**
      * Get the view / contents that represent the component.
      *
-     * @return \Illuminate\Contracts\View\View|string
+     * @return View|string
      */
     public function render()
     {

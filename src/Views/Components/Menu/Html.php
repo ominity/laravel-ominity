@@ -2,6 +2,7 @@
 
 namespace Ominity\Laravel\Views\Components\Menu;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
 class Html extends Component
@@ -25,7 +26,7 @@ class Html extends Component
     /**
      * Get the view / contents that represent the component.
      *
-     * @return \Illuminate\Contracts\View\View|string
+     * @return View|string
      */
     public function render()
     {

@@ -18,7 +18,7 @@ class OminityLaravelHttpClientAdapter implements HttpAdapterInterface
      * @param  string  $httpBody
      * @return \stdClass|string|null
      *
-     * @throws \Ominity\Api\Exceptions\ApiException
+     * @throws ApiException
      */
     public function send($httpMethod, $url, $headers, $httpBody)
     {

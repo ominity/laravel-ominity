@@ -2,6 +2,7 @@
 
 namespace Ominity\Laravel;
 
+use Laravel\Socialite\AbstractUser;
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
 use Laravel\Socialite\Two\User;
@@ -78,7 +79,7 @@ class OminityOAuthProvider extends AbstractProvider implements ProviderInterface
     /**
      * Map the raw user array to a Socialite User instance.
      *
-     * @return \Laravel\Socialite\AbstractUser
+     * @return AbstractUser
      */
     protected function mapUserToObject(array $user)
     {

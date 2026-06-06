@@ -4,6 +4,8 @@ namespace Ominity\Laravel\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Translation\PotentiallyTranslatedString;
+use Ominity\Api\Exceptions\ApiException;
 use Ominity\Api\OminityApiClient;
 
 class PaymentMethodMandateSupport implements ValidationRule
@@ -18,7 +20,7 @@ class PaymentMethodMandateSupport implements ValidationRule
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  Closure(string): PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
@@ -27,7 +29,7 @@ class PaymentMethodMandateSupport implements ValidationRule
         try {
             $paymehtmethod = $this->ominityApiClient->settings->paymentmethods->get($value);
             $mandate = $paymehtmethod->supportsMandates();
-        } catch (\Ominity\Api\Exceptions\ApiException $e) {
+        } catch (ApiException $e) {
         }
 
         if (! $mandate) {

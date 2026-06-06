@@ -136,6 +136,7 @@ class OminityPageRenderer
         $trackingMetadata = $cacheStore->get($this->trackingCacheKey($cacheKey));
         if (is_array($trackingMetadata) && ! empty($trackingMetadata)) {
             $this->tracking->mergePageMetadata($trackingMetadata);
+
             return true;
         }
 

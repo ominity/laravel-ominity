@@ -50,11 +50,11 @@ PHP;
         });
 
         Blade::directive('ominity_tracking', function () {
-            return "<?php echo app(".OminityTrackingService::class."::class)->renderBootstrapScript(); ?>";
+            return '<?php echo app('.OminityTrackingService::class.'::class)->renderBootstrapScript(); ?>';
         });
 
         Blade::directive('ominity_tracking_meta', function ($expression) {
-            return "<?php app(".OminityTrackingService::class."::class)->mergePageMetadata({$expression}); ?>";
+            return '<?php app('.OminityTrackingService::class."::class)->mergePageMetadata({$expression}); ?>";
         });
     }
 }

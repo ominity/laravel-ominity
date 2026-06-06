@@ -9,6 +9,7 @@ use Ominity\Api\OminityApiClient;
 use Ominity\Api\Resources\Commerce\Cart;
 use Ominity\Api\Types\CartStatus;
 use Ominity\Api\Types\CartType;
+use Ominity\Laravel\Exceptions\InvalidPromotionCodeException;
 use Ominity\Laravel\Models\User;
 
 class OminityCartService
@@ -23,8 +24,7 @@ class OminityCartService
         OminityApiClient $ominity,
         array $config,
         protected OminityTrackingService $tracking,
-    )
-    {
+    ) {
         $this->ominity = $ominity;
         $this->config = $config;
     }
@@ -83,7 +83,7 @@ class OminityCartService
         }
 
         if ($type == CartType::SHARED) {
-            /** @var \Ominity\Laravel\Models\User $user */
+            /** @var User $user */
             $user = Auth::user();
             $customerUser = $user->getCurrentCustomer();
 
@@ -138,7 +138,7 @@ class OminityCartService
         }
 
         if ($type == CartType::SHARED) {
-            /** @var \Ominity\Laravel\Models\User $user */
+            /** @var User $user */
             $user = Auth::user();
             $customerUser = $user->getCurrentCustomer();
 
@@ -206,7 +206,7 @@ class OminityCartService
      * @param  string  $promotionCode
      * @return Cart|null
      *
-     * @throws \Ominity\Laravel\Exceptions\InvalidPromotionCodeException
+     * @throws InvalidPromotionCodeException
      */
     public function applyPromotionCode($promotionCode)
     {
@@ -219,7 +219,7 @@ class OminityCartService
         $this->cart = $this->cart->update();
 
         if (! in_array($promotionCode, $this->cart->promotionCodes ?? [])) {
-            throw new \Ominity\Laravel\Exceptions\InvalidPromotionCodeException;
+            throw new InvalidPromotionCodeException;
         }
 
         return $this->cart;
@@ -292,7 +292,7 @@ class OminityCartService
 
         if ($cart->isSharedCart()) {
             if (Auth::check() && Auth::user() instanceof User) {
-                /** @var \Ominity\Laravel\Models\User $user */
+                /** @var User $user */
                 $user = Auth::user();
                 $customerUser = $user->getCurrentCustomer();
 
@@ -349,7 +349,7 @@ class OminityCartService
 
         if ($type == CartType::SHARED) {
             if (Auth::user() instanceof User) {
-                /** @var \Ominity\Laravel\Models\User $user */
+                /** @var User $user */
                 $user = Auth::user();
                 $customerUser = $user->getCurrentCustomer();
 

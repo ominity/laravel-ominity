@@ -4,6 +4,7 @@ namespace Ominity\Laravel;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
+use Ominity\Api\Exceptions\ApiException;
 use Ominity\Api\OminityApiClient;
 use Ominity\Laravel\Models\User;
 
@@ -33,7 +34,7 @@ class OminityUserProvider implements UserProvider
             }
 
             return $user;
-        } catch (\Ominity\Api\Exceptions\ApiException $e) {
+        } catch (ApiException $e) {
             return null;
         }
     }
@@ -52,7 +53,7 @@ class OminityUserProvider implements UserProvider
             }
 
             return $user;
-        } catch (\Ominity\Api\Exceptions\ApiException $e) {
+        } catch (ApiException $e) {
             return null;
         }
     }
@@ -107,7 +108,7 @@ class OminityUserProvider implements UserProvider
      * @param  string  $scope
      * @return \stdClass
      *
-     * @throws \Ominity\Api\Exceptions\ApiException
+     * @throws ApiException
      */
     protected function authenticateUser(string $username, string $password, $scope = '*')
     {

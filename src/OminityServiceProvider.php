@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Socialite\Contracts\Factory;
 use Ominity\Api\OminityApiClient;
 use Ominity\Laravel\Console\Commands\PreRenderPagesCommand;
 use Ominity\Laravel\Http\Middleware\AuthenticateMfa;
@@ -17,8 +18,8 @@ use Ominity\Laravel\Rules\PaymentMethodMandateSupport;
 use Ominity\Laravel\Rules\VatNumber;
 use Ominity\Laravel\Rules\VatNumberFormat;
 use Ominity\Laravel\Services\OminityCartService;
-use Ominity\Laravel\Services\OminityTrackingService;
 use Ominity\Laravel\Services\OminityRouterService;
+use Ominity\Laravel\Services\OminityTrackingService;
 use Ominity\Laravel\Services\VatValidationService;
 
 class OminityServiceProvider extends ServiceProvider
@@ -63,7 +64,7 @@ class OminityServiceProvider extends ServiceProvider
 
         Blade::componentNamespace('Ominity\\Laravel\\Views\\Components', 'ominity');
 
-        if (class_exists(\Laravel\Socialite\Contracts\Factory::class)) {
+        if (class_exists(Factory::class)) {
             $this->extendSocialite();
         }
 
@@ -149,7 +150,7 @@ class OminityServiceProvider extends ServiceProvider
      */
     protected function extendSocialite()
     {
-        if (interface_exists($socialiteFactoryClass = \Laravel\Socialite\Contracts\Factory::class)) {
+        if (interface_exists($socialiteFactoryClass = Factory::class)) {
             $socialite = $this->app->make($socialiteFactoryClass);
 
             $socialite->extend('ominity', function (Container $app) use ($socialite) {

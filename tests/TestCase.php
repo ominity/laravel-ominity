@@ -2,6 +2,7 @@
 
 namespace Ominity\Laravel\Tests;
 
+use Illuminate\Foundation\Application;
 use Ominity\Laravel\OminityServiceProvider;
 
 /**
@@ -12,7 +13,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     /**
      * Get package providers.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  Application  $app
      * @return array
      */
     protected function getPackageProviders($app)
