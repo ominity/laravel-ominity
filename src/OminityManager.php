@@ -6,6 +6,7 @@ use Illuminate\Contracts\Container\Container;
 use Ominity\Api\OminityApiClient;
 use Ominity\Laravel\Services\OminityCartService;
 use Ominity\Laravel\Services\OminityRouterService;
+use Ominity\Laravel\Services\OminityTrackingService;
 use Ominity\Laravel\Services\VatValidationService;
 
 class OminityManager
@@ -35,5 +36,10 @@ class OminityManager
     public function cart(): OminityCartService
     {
         return $this->app->make(OminityCartService::class);
+    }
+
+    public function tracking(): OminityTrackingService
+    {
+        return $this->app->make(OminityTrackingService::class);
     }
 }

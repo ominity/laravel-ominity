@@ -19,7 +19,11 @@ class OminityCartService
 
     protected ?Cart $cart = null;
 
-    public function __construct(OminityApiClient $ominity, array $config)
+    public function __construct(
+        OminityApiClient $ominity,
+        array $config,
+        protected OminityTrackingService $tracking,
+    )
     {
         $this->ominity = $ominity;
         $this->config = $config;
@@ -125,6 +129,9 @@ class OminityCartService
         if ($currency) {
             $body['currency'] = $currency;
         }
+
+        $body['visitorId'] = $this->tracking->getVisitorId();
+        $this->tracking->queueVisitorCookie($body['visitorId']);
 
         if ($type != CartType::GUEST) {
             $body['userId'] = Auth::id();

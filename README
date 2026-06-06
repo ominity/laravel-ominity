@@ -31,6 +31,67 @@ php artisan vendor:publish --provider="Ominity\Laravel\OminityServiceProvider"
 
 This will create a `config/ominity.php` file where you can configure the package settings.
 
+## Tracking
+
+The package now includes a first-party visitor/event tracking layer.
+
+Add the existing script directive to your layout:
+
+```blade
+@ominity_scripts
+```
+
+That now does two things:
+
+1. loads `vendor/ominity/ominity.js`
+2. boots the tracking runtime with the current visitor ID, authenticated user ID, route endpoint, and page metadata
+
+Tracked automatically in the browser:
+
+* page views
+* session starts
+* scroll depth milestones
+* outbound link clicks
+* file downloads
+* native form submits
+* custom click events via `data-ominity-event`
+
+Configuration lives under `config/ominity.php` in the `tracking` section.
+
+Important environment flags:
+
+```env
+OMINITY_TRACKING_ENABLED=true
+OMINITY_TRACKING_SEND_IN_LOCAL=false
+OMINITY_TRACKING_LOG_IN_LOCAL=true
+```
+
+Local environment behavior defaults to logging events instead of forwarding them to Ominity.
+
+For manual page metadata you can use:
+
+```blade
+@ominity_tracking_meta([
+    'origin_resource' => [
+        'resource' => 'product',
+        'id' => $product->id,
+        'slug' => $product->slug,
+    ],
+])
+```
+
+For server-side access:
+
+```php
+Ominity::tracking()->track([
+    'event' => 'purchase',
+    'visitorId' => Ominity::tracking()->getVisitorId(),
+    'metadata' => [
+        'order_id' => $order->id,
+    ],
+]);
+```
+
 ## License
 
 [The MIT License](LICENSE.md). Copyright (c) 2024, Ominity (Connexeon BV)

@@ -8,6 +8,7 @@ use Ominity\Laravel\OminityManager;
 use Ominity\Laravel\OminityPageRenderer;
 use Ominity\Laravel\Services\OminityCartService;
 use Ominity\Laravel\Services\OminityRouterService;
+use Ominity\Laravel\Services\OminityTrackingService;
 use Ominity\Laravel\Services\VatValidationService;
 
 /**
@@ -18,6 +19,7 @@ use Ominity\Laravel\Services\VatValidationService;
  * @method static OminityRouterService router()
  * @method static VatValidationService vatValidator()
  * @method static OminityCartService cart()
+ * @method static OminityTrackingService tracking()
  */
 class Ominity extends Facade
 {

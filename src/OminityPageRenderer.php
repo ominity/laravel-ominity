@@ -6,14 +6,17 @@ use Illuminate\Support\Facades\Cache;
 use Ominity\Api\OminityApiClient;
 use Ominity\Api\Resources\Cms\Page;
 use Ominity\Laravel\Exceptions\PageConentNotIncludedException;
+use Ominity\Laravel\Services\OminityTrackingService;
 use Ominity\Laravel\Views\Components\OminityComponent;
 
 class OminityPageRenderer
 {
     protected $ominity;
 
-    public function __construct(OminityApiClient $ominity)
-    {
+    public function __construct(
+        OminityApiClient $ominity,
+        protected OminityTrackingService $tracking,
+    ) {
         $this->ominity = $ominity;
     }
 
@@ -35,6 +38,11 @@ class OminityPageRenderer
         if ($cacheConfig['enabled']) {
             $cacheStore = Cache::store($cacheConfig['store'] ?? 'file');
             if ($cacheStore->has($cacheKey) && ! $forced) {
+                if (! $this->applyCachedTrackingMetadata($cacheStore, $cacheKey)) {
+                    $this->ominity->setLanguage($language);
+                    $this->applyPageTrackingMetadata($this->ominity->cms->pages->get($pageId), $language);
+                }
+
                 return $cacheStore->get($cacheKey);
             }
         }
@@ -42,6 +50,7 @@ class OminityPageRenderer
         $this->ominity->setLanguage($language);
         $page = $this->ominity->cms->pages->get($pageId, ['include' => 'content']);
         OminityComponent::setPage($page);
+        $this->applyPageTrackingMetadata($page, $language);
 
         $output = '';
         foreach ($page->content as $component) {
@@ -50,6 +59,7 @@ class OminityPageRenderer
 
         if ($page->isCached && $cacheConfig['enabled']) {
             $cacheStore->put($cacheKey, $output, $cacheConfig['expiration']);
+            $cacheStore->put($this->trackingCacheKey($cacheKey), $this->tracking->buildCmsPageMetadata($page, $language), $cacheConfig['expiration']);
         }
 
         return $output;
@@ -75,6 +85,8 @@ class OminityPageRenderer
         if ($cacheConfig['enabled']) {
             $cacheStore = Cache::store($cacheConfig['store'] ?? 'file');
             if ($cacheStore->has($cacheKey) && ! $forced) {
+                $this->applyPageTrackingMetadata($page, $language);
+
                 return $cacheStore->get($cacheKey);
             }
         }
@@ -84,6 +96,7 @@ class OminityPageRenderer
         }
 
         OminityComponent::setPage($page);
+        $this->applyPageTrackingMetadata($page, $language);
 
         $output = '';
         foreach ($page->content as $component) {
@@ -92,6 +105,7 @@ class OminityPageRenderer
 
         if ($page->isCached && $cacheConfig['enabled']) {
             $cacheStore->put($cacheKey, $output, $cacheConfig['expiration']);
+            $cacheStore->put($this->trackingCacheKey($cacheKey), $this->tracking->buildCmsPageMetadata($page, $language), $cacheConfig['expiration']);
         }
 
         return $output;
@@ -110,5 +124,26 @@ class OminityPageRenderer
         }
 
         return '';
+    }
+
+    protected function applyPageTrackingMetadata(Page $page, string $language): void
+    {
+        $this->tracking->mergePageMetadata($this->tracking->buildCmsPageMetadata($page, $language));
+    }
+
+    protected function applyCachedTrackingMetadata($cacheStore, string $cacheKey): bool
+    {
+        $trackingMetadata = $cacheStore->get($this->trackingCacheKey($cacheKey));
+        if (is_array($trackingMetadata) && ! empty($trackingMetadata)) {
+            $this->tracking->mergePageMetadata($trackingMetadata);
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function trackingCacheKey(string $cacheKey): string
+    {
+        return "{$cacheKey}_tracking";
     }
 }

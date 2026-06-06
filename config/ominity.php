@@ -92,6 +92,41 @@ return [
         'cookie_expiration' => env('OMINITY_CART_COOKIE_EXPIRATION', 60 * 24 * 30), // 30 days
     ],
 
+    'tracking' => [
+        'enabled' => env('OMINITY_TRACKING_ENABLED'),
+        'send_in_local' => env('OMINITY_TRACKING_SEND_IN_LOCAL', false),
+        'log_in_local' => env('OMINITY_TRACKING_LOG_IN_LOCAL', true),
+        'log_events' => env('OMINITY_TRACKING_LOG_EVENTS', false),
+        'log_channel' => env('OMINITY_TRACKING_LOG_CHANNEL'),
+        'route' => [
+            'path' => env('OMINITY_TRACKING_ROUTE_PATH', '/ominity/tracking/events'),
+        ],
+        'cookie' => [
+            'name' => env('OMINITY_TRACKING_COOKIE_NAME', '_omtvid'),
+            'expiration' => env('OMINITY_TRACKING_COOKIE_EXPIRATION', 60 * 24 * 365), // minutes
+            'path' => env('OMINITY_TRACKING_COOKIE_PATH', '/'),
+            'same_site' => env('OMINITY_TRACKING_COOKIE_SAME_SITE', 'lax'),
+            'secure' => env('OMINITY_TRACKING_COOKIE_SECURE'),
+        ],
+        'frontend' => [
+            'sample_rate' => env('OMINITY_TRACKING_SAMPLE_RATE', 1),
+            'track_page_views' => env('OMINITY_TRACKING_PAGE_VIEWS', true),
+            'track_sessions' => env('OMINITY_TRACKING_SESSIONS', true),
+            'track_scroll_depth' => env('OMINITY_TRACKING_SCROLL_DEPTH', true),
+            'scroll_depth_thresholds' => [25, 50, 75, 100],
+            'track_outbound_clicks' => env('OMINITY_TRACKING_OUTBOUND_CLICKS', true),
+            'track_file_downloads' => env('OMINITY_TRACKING_FILE_DOWNLOADS', true),
+            'track_form_submissions' => env('OMINITY_TRACKING_FORM_SUBMISSIONS', true),
+            'track_custom_clicks' => env('OMINITY_TRACKING_CUSTOM_CLICKS', true),
+            'flush_queue_on_mount' => env('OMINITY_TRACKING_FLUSH_QUEUE', true),
+            'queue_key' => env('OMINITY_TRACKING_QUEUE_KEY', '__ominity_tracking_queue_v1'),
+            'session_key' => env('OMINITY_TRACKING_SESSION_KEY', '__ominity_tracking_session_v1'),
+            'max_queue_size' => env('OMINITY_TRACKING_MAX_QUEUE_SIZE', 50),
+            'event_names' => [],
+            'extra_metadata' => [],
+        ],
+    ],
+
     'users' => [
         'mfa' => [
             'enabled' => env('OMINITY_MFA_ENABLED', false),

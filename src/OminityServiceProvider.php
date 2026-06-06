@@ -17,12 +17,13 @@ use Ominity\Laravel\Rules\PaymentMethodMandateSupport;
 use Ominity\Laravel\Rules\VatNumber;
 use Ominity\Laravel\Rules\VatNumberFormat;
 use Ominity\Laravel\Services\OminityCartService;
+use Ominity\Laravel\Services\OminityTrackingService;
 use Ominity\Laravel\Services\OminityRouterService;
 use Ominity\Laravel\Services\VatValidationService;
 
 class OminityServiceProvider extends ServiceProvider
 {
-    const PACKAGE_VERSION = '1.3.0';
+    const PACKAGE_VERSION = '1.4.0';
 
     /**
      * Boot the service provider.
@@ -103,8 +104,19 @@ class OminityServiceProvider extends ServiceProvider
             }
         );
 
+        $this->app->scoped(OminityTrackingService::class, function ($app) {
+            return new OminityTrackingService(
+                $app->make(OminityApiClient::class),
+                $app['config']['ominity.tracking'],
+                $app
+            );
+        });
+
         $this->app->singleton(OminityPageRenderer::class, function ($app) {
-            return new OminityPageRenderer($app->make(OminityApiClient::class));
+            return new OminityPageRenderer(
+                $app->make(OminityApiClient::class),
+                $app->make(OminityTrackingService::class)
+            );
         });
 
         $this->app->singleton(OminityRouterService::class, function ($app) {
@@ -116,7 +128,11 @@ class OminityServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(OminityCartService::class, function ($app) {
-            return new OminityCartService($app->make(OminityApiClient::class), $app['config']['ominity.cart']);
+            return new OminityCartService(
+                $app->make(OminityApiClient::class),
+                $app['config']['ominity.cart'],
+                $app->make(OminityTrackingService::class)
+            );
         });
 
         $this->app->singleton(AuthenticateMfa::class, function ($app) {

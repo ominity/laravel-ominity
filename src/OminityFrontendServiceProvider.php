@@ -4,6 +4,7 @@ namespace Ominity\Laravel;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Ominity\Laravel\Services\OminityTrackingService;
 
 class OminityFrontendServiceProvider extends ServiceProvider
 {
@@ -41,12 +42,19 @@ HTML;
         });
 
         Blade::directive('ominity_scripts', function () {
-            $packageVersion = OminityServiceProvider::PACKAGE_VERSION;
-            $script = asset('vendor/ominity/ominity.js')."?v={$packageVersion}";
+            return <<<'PHP'
+<?php $ominityPackageVersion = \Ominity\Laravel\OminityServiceProvider::PACKAGE_VERSION; ?>
+<script src="<?php echo e(asset('vendor/ominity/ominity.js').'?v='.$ominityPackageVersion); ?>"></script>
+<?php echo app(\Ominity\Laravel\Services\OminityTrackingService::class)->renderBootstrapScript(); ?>
+PHP;
+        });
 
-            return <<<HTML
-<script src="{$script}"></script>
-HTML;
+        Blade::directive('ominity_tracking', function () {
+            return "<?php echo app(".OminityTrackingService::class."::class)->renderBootstrapScript(); ?>";
+        });
+
+        Blade::directive('ominity_tracking_meta', function ($expression) {
+            return "<?php app(".OminityTrackingService::class."::class)->mergePageMetadata({$expression}); ?>";
         });
     }
 }
