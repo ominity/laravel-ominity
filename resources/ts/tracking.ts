@@ -119,7 +119,7 @@ const TRACKING_QUERY_PARAM_KEYS = new Set([
     'vero_id',
     'wbraid',
 ]);
-const TRACKING_QUERY_PARAM_PREFIXES = ['utm_', '_ga_', '_gac_', '_gcl_'];
+const TRACKING_QUERY_PARAM_PREFIXES = ['utm_', '_ga_', '_gac_', '_gcl_', 'gad_'];
 
 const state = {
     started: false,

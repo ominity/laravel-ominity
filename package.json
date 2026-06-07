@@ -1,6 +1,6 @@
 {
   "name": "laravel-ominity",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "<h1 align=\"center\">Ominity for Laravel</h1>",
   "main": "index.js",
   "directories": {
