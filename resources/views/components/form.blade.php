@@ -5,7 +5,7 @@
     class="ominity-form {{ $class ?? '' }}"
     data-form="{{ $form->id }}"
     @if(isset($ajax) && $ajax) data-role="ajax" @endif
-    @if(config('ominity.forms.recaptcha.enabled')) data-recaptcha="{{ config('ominity.forms.recaptcha.version') }}" @endif
+    @if(config('ominity.forms.recaptcha.enabled') && filled(config('ominity.forms.recaptcha.site_key'))) data-recaptcha="{{ config('ominity.forms.recaptcha.version') }}" @endif
     novalidate
 >
     <input type="hidden" name="_token" value="">

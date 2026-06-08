@@ -1,5 +1,5 @@
 <div class="form-field-button">
-    @if ($field->defaultValue == 'submit' && $recaptchaConfig['enabled'] && $recaptchaConfig['version'] == 'v2')
+    @if ($field->defaultValue == 'submit' && $recaptchaConfig['enabled'] && $recaptchaConfig['version'] == 'v2' && filled($recaptchaConfig['site_key'] ?? null))
         <div class="g-recaptcha" data-sitekey="{{ $recaptchaConfig['site_key'] }}"></div>
     @endif
 

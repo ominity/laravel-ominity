@@ -16,18 +16,23 @@ class OminityFrontendServiceProvider extends ServiceProvider
             }
 
             $version = config('ominity.forms.recaptcha.version', 'v3');
-            $siteKey = config('ominity.forms.recaptcha.site_key');
+            $siteKey = trim((string) config('ominity.forms.recaptcha.site_key', ''));
+            if ($siteKey === '') {
+                return '';
+            }
+
+            $escapedSiteKey = e($siteKey);
 
             if ($version === 'v3') {
                 return <<<HTML
-<meta name="recaptcha-site-key" content="{$siteKey}">
-<script src="https://www.google.com/recaptcha/api.js?render={$siteKey}"></script>
+<meta name="recaptcha-site-key" content="{$escapedSiteKey}">
+<script src="https://www.google.com/recaptcha/api.js?render={$escapedSiteKey}"></script>
 HTML;
             }
 
             // fallback for v2
             return <<<HTML
-<meta name="recaptcha-site-key" content="{$siteKey}">
+<meta name="recaptcha-site-key" content="{$escapedSiteKey}">
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 HTML;
         });

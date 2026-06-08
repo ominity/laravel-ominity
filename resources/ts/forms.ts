@@ -2,6 +2,7 @@ interface OminityFormsConfig {
     toastHandler?: (options: { type: string; message: string }) => void;
     disableSubmitDuringRequest?: boolean;
     enableTracking?: boolean;
+    recaptchaErrorMessage?: string;
     gtagEvents?: {
         successEvent?: string;
         errorEvent?: string;
@@ -31,7 +32,7 @@ const OminityForms = {
 
             const formId = form.getAttribute('data-form') || '';
             const recaptchaVersion = form.getAttribute('data-recaptcha');
-            const siteKey = document.querySelector('meta[name="recaptcha-site-key"]')?.getAttribute('content');
+            const siteKey = this.resolveRecaptchaSiteKey();
 
             const event = new CustomEvent('form:submit', { detail: { formId, recaptchaVersion }, cancelable: true });
             const wasPrevented = !form.dispatchEvent(event);
@@ -45,8 +46,17 @@ const OminityForms = {
             if (recaptchaVersion === 'v3') {
                 e.preventDefault();
 
-                if (typeof grecaptcha === 'undefined') {
-                    console.warn('reCAPTCHA v3 is not loaded.');
+                if (!siteKey) {
+                    this.handleRecaptchaError(form, formId, new Error('reCAPTCHA site key is not configured.'));
+                    return;
+                }
+
+                if (
+                    typeof grecaptcha === 'undefined'
+                    || typeof grecaptcha.ready !== 'function'
+                    || typeof grecaptcha.execute !== 'function'
+                ) {
+                    this.handleRecaptchaError(form, formId, new Error('reCAPTCHA v3 is not loaded.'));
                     return;
                 }
 
@@ -59,10 +69,18 @@ const OminityForms = {
                 }
 
                 grecaptcha.ready(() => {
-                    grecaptcha.execute(siteKey!, { action: 'submit' }).then((token: string) => {
-                        recaptchaInput!.value = token;
-                        this.submitForm(form, formId);
-                    });
+                    try {
+                        grecaptcha.execute(siteKey, { action: 'submit' })
+                            .then((token: string) => {
+                                recaptchaInput!.value = token;
+                                this.submitForm(form, formId);
+                            })
+                            .catch((error: unknown) => {
+                                this.handleRecaptchaError(form, formId, error);
+                            });
+                    } catch (error) {
+                        this.handleRecaptchaError(form, formId, error);
+                    }
                 });
             }
             else if (form.getAttribute('data-role') === 'ajax') {
@@ -144,8 +162,39 @@ const OminityForms = {
         })
         .catch(error => {
             console.error('Form submit error:', error);
+            OminityForms.enableSubmitButtons(form);
             form.dispatchEvent(new CustomEvent('form:fail', { detail: { formId, error } }));
         });
+    },
+
+    resolveRecaptchaSiteKey(): string | null {
+        const siteKey = document.querySelector('meta[name="recaptcha-site-key"]')?.getAttribute('content')?.trim();
+
+        return siteKey ? siteKey : null;
+    },
+
+    handleRecaptchaError(form: HTMLFormElement, formId: string, error: unknown): void {
+        const recaptchaInput = form.querySelector<HTMLInputElement>('input[name="g-recaptcha-response"]');
+        if (recaptchaInput) {
+            recaptchaInput.value = '';
+        }
+
+        this.enableSubmitButtons(form);
+
+        const message = this.config.recaptchaErrorMessage
+            || 'Captcha could not be loaded. Please refresh the page and try again.';
+
+        console.error('reCAPTCHA error:', error);
+
+        const event = new CustomEvent('form:captcha-error', {
+            detail: { formId, error, message },
+            cancelable: true,
+        });
+
+        const wasPrevented = !form.dispatchEvent(event);
+        if (!wasPrevented) {
+            this.showToast(message, 'danger');
+        }
     },
 
     handleFormErrors(form: HTMLFormElement, errors: Record<string, string[]>): void {
