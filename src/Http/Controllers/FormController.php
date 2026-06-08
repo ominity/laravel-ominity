@@ -135,6 +135,18 @@ class FormController extends Controller
             abort(422, __('ominity::forms.recaptcha_missing'));
         }
 
+        $driver = $config['driver'] ?? 'classic';
+        if ($driver === 'enterprise') {
+            $this->validateEnterpriseRecaptcha($request, $config, $token);
+
+            return;
+        }
+
+        $this->validateClassicRecaptcha($request, $config, $token);
+    }
+
+    protected function validateClassicRecaptcha(Request $request, array $config, string $token): void
+    {
         $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
             'secret' => $config['secret_key'],
             'response' => $token,
@@ -148,12 +160,78 @@ class FormController extends Controller
         }
 
         if ($config['version'] === 'v3') {
-            $score = $result['score'] ?? 0;
-            $threshold = (float) $config['score'] ?? 0.5;
+            $expectedAction = $this->resolveRecaptchaAction($config);
+            $actualAction = trim((string) ($result['action'] ?? ''));
+            if ($expectedAction !== '' && $actualAction !== '' && $actualAction !== $expectedAction) {
+                abort(422, __('ominity::forms.recaptcha_failed'));
+            }
+
+            $score = (float) ($result['score'] ?? 0);
+            $threshold = (float) ($config['score'] ?? 0.5);
 
             if ($score < $threshold) {
                 abort(422, __('ominity::forms.recaptcha_low_score'));
             }
         }
+    }
+
+    protected function validateEnterpriseRecaptcha(Request $request, array $config, string $token): void
+    {
+        $projectId = trim((string) data_get($config, 'enterprise.project_id', ''));
+        $apiKey = trim((string) data_get($config, 'enterprise.api_key', ''));
+        $siteKey = trim((string) ($config['site_key'] ?? ''));
+
+        if ($projectId === '' || $apiKey === '' || $siteKey === '') {
+            throw new \RuntimeException(
+                'reCAPTCHA Enterprise is enabled, but OMINITY_FORMS_RECAPTCHA_SITE_KEY, '
+                .'OMINITY_FORMS_RECAPTCHA_ENTERPRISE_PROJECT_ID, or '
+                .'OMINITY_FORMS_RECAPTCHA_ENTERPRISE_API_KEY is missing.'
+            );
+        }
+
+        $expectedAction = $this->resolveRecaptchaAction($config);
+        $event = array_filter([
+            'token' => $token,
+            'siteKey' => $siteKey,
+            'expectedAction' => $expectedAction,
+            'userAgent' => $request->userAgent(),
+            'userIpAddress' => $request->ip(),
+        ], static fn ($value) => $value !== null && $value !== '');
+
+        $response = Http::withQueryParameters([
+            'key' => $apiKey,
+        ])->post("https://recaptchaenterprise.googleapis.com/v1/projects/{$projectId}/assessments", [
+            'event' => $event,
+        ]);
+
+        if (! $response->successful()) {
+            abort(422, __('ominity::forms.recaptcha_failed'));
+        }
+
+        $result = $response->json();
+        if (! data_get($result, 'tokenProperties.valid')) {
+            abort(422, __('ominity::forms.recaptcha_failed'));
+        }
+
+        $actualAction = trim((string) data_get($result, 'tokenProperties.action', ''));
+        if ($expectedAction !== '' && $actualAction !== '' && $actualAction !== $expectedAction) {
+            abort(422, __('ominity::forms.recaptcha_failed'));
+        }
+
+        if (($config['version'] ?? 'v2') === 'v3') {
+            $score = (float) data_get($result, 'riskAnalysis.score', 0);
+            $threshold = (float) ($config['score'] ?? 0.5);
+
+            if ($score < $threshold) {
+                abort(422, __('ominity::forms.recaptcha_low_score'));
+            }
+        }
+    }
+
+    protected function resolveRecaptchaAction(array $config): string
+    {
+        $action = trim((string) ($config['action'] ?? 'submit'));
+
+        return $action !== '' ? $action : 'submit';
     }
 }

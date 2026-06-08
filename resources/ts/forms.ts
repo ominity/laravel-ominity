@@ -19,6 +19,13 @@ interface AjaxResponse {
     message?: string;
 }
 
+type RecaptchaDriver = 'classic' | 'enterprise';
+
+interface RecaptchaApi {
+    execute(siteKey: string, options: { action: string }): Promise<string>;
+    ready(callback: () => void): void;
+}
+
 const OminityForms = {
     config: {} as OminityFormsConfig,
 
@@ -32,9 +39,19 @@ const OminityForms = {
 
             const formId = form.getAttribute('data-form') || '';
             const recaptchaVersion = form.getAttribute('data-recaptcha');
+            const recaptchaDriver = this.resolveRecaptchaDriver(form);
+            const recaptchaAction = this.resolveRecaptchaAction(form);
             const siteKey = this.resolveRecaptchaSiteKey();
 
-            const event = new CustomEvent('form:submit', { detail: { formId, recaptchaVersion }, cancelable: true });
+            const event = new CustomEvent('form:submit', {
+                detail: {
+                    formId,
+                    recaptchaVersion,
+                    recaptchaDriver,
+                    recaptchaAction,
+                },
+                cancelable: true,
+            });
             const wasPrevented = !form.dispatchEvent(event);
             if (wasPrevented) {
                 e.preventDefault();
@@ -51,12 +68,13 @@ const OminityForms = {
                     return;
                 }
 
-                if (
-                    typeof grecaptcha === 'undefined'
-                    || typeof grecaptcha.ready !== 'function'
-                    || typeof grecaptcha.execute !== 'function'
-                ) {
-                    this.handleRecaptchaError(form, formId, new Error('reCAPTCHA v3 is not loaded.'));
+                const recaptchaApi = this.resolveRecaptchaApi(recaptchaDriver);
+                if (!recaptchaApi) {
+                    this.handleRecaptchaError(
+                        form,
+                        formId,
+                        new Error(`reCAPTCHA ${recaptchaDriver} v3 is not loaded.`)
+                    );
                     return;
                 }
 
@@ -68,9 +86,9 @@ const OminityForms = {
                     form.appendChild(recaptchaInput);
                 }
 
-                grecaptcha.ready(() => {
+                recaptchaApi.ready(() => {
                     try {
-                        grecaptcha.execute(siteKey, { action: 'submit' })
+                        recaptchaApi.execute(siteKey, { action: recaptchaAction })
                             .then((token: string) => {
                                 recaptchaInput!.value = token;
                                 this.submitForm(form, formId);
@@ -171,6 +189,37 @@ const OminityForms = {
         const siteKey = document.querySelector('meta[name="recaptcha-site-key"]')?.getAttribute('content')?.trim();
 
         return siteKey ? siteKey : null;
+    },
+
+    resolveRecaptchaDriver(form: HTMLFormElement): RecaptchaDriver {
+        const rawDriver = (
+            form.getAttribute('data-recaptcha-driver')
+            || document.querySelector('meta[name="recaptcha-driver"]')?.getAttribute('content')
+            || 'classic'
+        ).trim().toLowerCase();
+
+        return rawDriver === 'enterprise' ? 'enterprise' : 'classic';
+    },
+
+    resolveRecaptchaAction(form: HTMLFormElement): string {
+        return (
+            form.getAttribute('data-recaptcha-action')
+            || document.querySelector('meta[name="recaptcha-action"]')?.getAttribute('content')
+            || 'submit'
+        ).trim() || 'submit';
+    },
+
+    resolveRecaptchaApi(driver: RecaptchaDriver): RecaptchaApi | null {
+        if (typeof grecaptcha === 'undefined') {
+            return null;
+        }
+
+        const api = driver === 'enterprise' ? grecaptcha.enterprise : grecaptcha;
+        if (!api || typeof api.ready !== 'function' || typeof api.execute !== 'function') {
+            return null;
+        }
+
+        return api;
     },
 
     handleRecaptchaError(form: HTMLFormElement, formId: string, error: unknown): void {

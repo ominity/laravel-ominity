@@ -1,6 +1,10 @@
 <div class="form-field-button">
     @if ($field->defaultValue == 'submit' && $recaptchaConfig['enabled'] && $recaptchaConfig['version'] == 'v2' && filled($recaptchaConfig['site_key'] ?? null))
-        <div class="g-recaptcha" data-sitekey="{{ $recaptchaConfig['site_key'] }}"></div>
+        <div
+            class="g-recaptcha"
+            data-sitekey="{{ $recaptchaConfig['site_key'] }}"
+            @if (($recaptchaConfig['driver'] ?? 'classic') === 'enterprise' && filled($recaptchaConfig['action'] ?? null)) data-action="{{ $recaptchaConfig['action'] }}" @endif
+        ></div>
     @endif
 
     <button type="{{ $field->defaultValue }}" class="{{ $field->isInline ? 'form-inline' : '' }} {{ $field->css->classes ?? 'btn btn-primary' }}" style="{{ $style }}" id="{{ $id }}">{{ $field->label }}</button>

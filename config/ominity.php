@@ -66,10 +66,16 @@ return [
         ],
         'recaptcha' => [
             'enabled' => env('OMINITY_FORMS_RECAPTCHA_ENABLED', false),
+            'driver' => env('OMINITY_FORMS_RECAPTCHA_DRIVER', 'classic'),
             'site_key' => env('OMINITY_FORMS_RECAPTCHA_SITE_KEY', ''),
             'secret_key' => env('OMINITY_FORMS_RECAPTCHA_SECRET_KEY', ''),
             'version' => env('OMINITY_FORMS_RECAPTCHA_VERSION', 'v2'),
+            'action' => env('OMINITY_FORMS_RECAPTCHA_ACTION', 'submit'),
             'score' => env('OMINITY_FORMS_RECAPTCHA_SCORE', 0.5), // Minimum score for reCAPTCHA v3
+            'enterprise' => [
+                'project_id' => env('OMINITY_FORMS_RECAPTCHA_ENTERPRISE_PROJECT_ID', env('GOOGLE_CLOUD_PROJECT', '')),
+                'api_key' => env('OMINITY_FORMS_RECAPTCHA_ENTERPRISE_API_KEY', ''),
+            ],
         ],
         'fields' => [
             'phone' => [

@@ -31,6 +31,42 @@ php artisan vendor:publish --provider="Ominity\Laravel\OminityServiceProvider"
 
 This will create a `config/ominity.php` file where you can configure the package settings.
 
+## Forms / reCAPTCHA
+
+The form renderer supports two reCAPTCHA drivers:
+
+* `classic`: uses `api.js` and backend `siteverify`
+* `enterprise`: uses `enterprise.js` and backend `projects.assessments.create`
+
+Classic mode remains the default for backwards compatibility, including migrated legacy keys that still use the classic frontend/backend calls.
+
+Example classic v3 configuration:
+
+```env
+OMINITY_FORMS_RECAPTCHA_ENABLED=true
+OMINITY_FORMS_RECAPTCHA_DRIVER=classic
+OMINITY_FORMS_RECAPTCHA_VERSION=v3
+OMINITY_FORMS_RECAPTCHA_SITE_KEY=your_site_key
+OMINITY_FORMS_RECAPTCHA_SECRET_KEY=your_secret_key
+OMINITY_FORMS_RECAPTCHA_ACTION=submit
+OMINITY_FORMS_RECAPTCHA_SCORE=0.5
+```
+
+Example reCAPTCHA Enterprise score-based configuration:
+
+```env
+OMINITY_FORMS_RECAPTCHA_ENABLED=true
+OMINITY_FORMS_RECAPTCHA_DRIVER=enterprise
+OMINITY_FORMS_RECAPTCHA_VERSION=v3
+OMINITY_FORMS_RECAPTCHA_SITE_KEY=your_site_key
+OMINITY_FORMS_RECAPTCHA_ENTERPRISE_PROJECT_ID=your-google-cloud-project-id
+OMINITY_FORMS_RECAPTCHA_ENTERPRISE_API_KEY=your-google-cloud-api-key
+OMINITY_FORMS_RECAPTCHA_ACTION=submit
+OMINITY_FORMS_RECAPTCHA_SCORE=0.5
+```
+
+If Google Cloud Console shows examples that use `grecaptcha.enterprise.execute(...)`, you should use the `enterprise` driver instead of `classic`.
+
 ## Tracking
 
 The package now includes a first-party visitor/event tracking layer.
